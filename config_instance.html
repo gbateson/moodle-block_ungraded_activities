@@ -1,0 +1,402 @@
+<?php
+/**
+ * mod/hotpot/ungraded_activities/config_instance.html
+ *
+ * @package   block_ungraded_activities
+ * @copyright 2011 Gordon Bateson <gordon.bateson@gmail.com>
+ * @license   you may not copy of distribute any part of this package without prior written permission
+ */
+
+$my_other_courses = $this->block->get_my_other_courses();
+$savebutton = '<input type="submit" class="savebutton" value="'.get_string('save', 'block_ungraded_activities').'" />';
+?>
+<script type="text/javascript">
+//<![CDATA[
+<?php if (empty($my_other_courses)) { ?>
+function hide_itemselect() {
+    var txt = 'td.itemselect { visibility: hidden; }';
+    var obj = document.createElement('style');
+    obj.setAttribute('type', 'text/css');
+    if (obj.styleSheet) {
+        obj.styleSheet.cssText = txt;
+    } else {
+        obj.appendChild(document.createTextNode(txt));
+    }
+    document.getElementsByTagName('head')[0].appendChild(obj);
+}
+hide_itemselect();
+<?php } ?>
+function reset_all_in(elTagName, elNamePrefix, parentTagName, parentClass, parentId, resetValues) {
+    var obj = document.getElementsByTagName(elTagName);
+    obj = filterByParent(obj, function(el) {return findParentNode(el, parentTagName, parentClass, parentId);});
+    for (var i=0; i<obj.length; i++) {
+        var elName = obj[i].name;
+        if (elName && (elNamePrefix=='' || elName.substr(0, elNamePrefix.length)==elNamePrefix)) {
+            switch (obj[i].type) {
+                case 'checkbox':
+                case 'radio':
+                    if (typeof(resetValues)=='string') {
+                        obj[i].checked = (resetValues=='all' ? true : false);
+                    } else {
+                        obj[i].checked = (resetValues[elName] ? true : false);
+                    }
+                    break;
+                case 'select':
+                case 'select-multiple':
+                    for (var ii=0; ii<obj[i].options.length; ii++) {
+                        if (typeof(resetValues)=='string') {
+                            obj[i].options[ii].selected = (resetValues=='all' ? true : false);
+                        } else {
+                            var elValue = obj[i].options[ii].value;
+                            obj[i].options[ii].selected = (resetValues[elValue] ? true : false);
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+}
+function toggledateformat(img, i) {
+    var obj = document.getElementById('dateformat' + i);
+    if (obj) {
+        if (obj.style.display=='none') {
+            obj.style.display = "";
+            img.src = "../pix/t/switch_minus.gif";
+        } else {
+            obj.style.display = "none";
+            img.src = "../pix/t/switch_plus.gif";
+        }
+    }
+    return false;
+}
+function select_all_courses(truefalse) {
+    var obj = document.getElementById('menumycourses');
+    if (obj) {
+        var i_max = obj.options.length;
+        for (var i=0; i<i_max; i++) {
+            obj.options[i].selected = truefalse;
+        }
+    }
+    return false;
+}
+function showhide_menu(obj) {
+    if (typeof(obj)=='undefined') {
+        obj = document.getElementById('showhidemenu');
+    }
+    if (obj && obj.parentNode && obj.parentNode.parentNode) {
+        var ul = obj.parentNode.parentNode.getElementsByTagName('ul');
+        var hidden = true;
+        for (var i=0; i<ul.length; i++) {
+            if (ul[i].style.display=='none') {
+                ul[i].style.display = '';
+                obj.innerHTML = '<img src="../pix/t/switch_minus.gif" alt="switch_minus.gif" />';
+                hidden = false;
+            } else {
+                ul[i].style.display = 'none';
+                obj.innerHTML = '<img src="../pix/t/switch_plus.gif" alt="switch_plus.gif" />';
+                hidden = true;
+            }
+        }
+        new cookie('quizportnavigationblock:showmenu', 1, (hidden ? -1 : 356), '/').set();
+    }
+}
+//]]>
+</script>
+<table cellpadding="9" cellspacing="0" class="blockconfigtable">
+
+<tr class="sectionheading">
+<th colspan="2" class="blockconfigmenu">
+    <p>
+        <?php print_string('settingsmenu', 'block_ungraded_activities') ?>
+        &nbsp;
+        <a id="showhidemenu" onclick="showhide_menu(this)"><img src="../pix/t/switch_plus.gif" alt="switch_plus.gif" /></a>
+    </p>
+    <ul style="display: none;"><?php
+        echo '<li class="even"><a href="#activities">'.get_string('activities').'</a></li>';
+    ?></ul>
+    <ul style="display: none;"><?php
+        echo '<li class="even"><a href="#users">'.get_string('users').'</a></li>';
+    ?></ul>
+    <ul style="display: none;"><?php
+        echo '<li class="even"><a href="#date">'.get_string('date').'</a></li>';
+        if (count($my_other_courses)) {
+            echo '<li class="even"><a href="#applyselectedvalues">'.get_string('courses').'</a></li>';
+        }
+    ?></ul>
+</th>
+<td class="importexport"><?php
+    if (isset($this->block->instance)) {
+        echo '<a href="'.$CFG->wwwroot.'/blocks/ungraded_activities/import.php?id='.$this->block->instance->id.'">'.get_string('importsettings', 'block_ungraded_activities').'</a> ';
+        helpbutton('importsettings', get_string('importsettings', 'block_ungraded_activities'), 'block_ungraded_activities');
+        echo '<br />';
+        echo '<a href="'.$CFG->wwwroot.'/blocks/ungraded_activities/export.php?id='.$this->block->instance->id.'">'.get_string('exportsettings', 'block_ungraded_activities').'</a> ';
+        helpbutton('exportsettings', get_string('exportsettings', 'block_ungraded_activities'), 'block_ungraded_activities');
+    }
+?></td>
+</tr>
+
+<tr>
+<td colspan="2" class="blockdescription"><a name="title"><?php echo nl2br(get_string('blockdescription', 'block_ungraded_activities')) ?></a></td>
+<td class="itemselect"><?php
+    echo get_string('select').' ';
+    helpbutton('selectallnone', get_string('select'), 'block_ungraded_activities');
+    echo '<br />';
+    echo '<a href="'."javascript:reset_all_in('INPUT','select_','TD','itemselect',null,'all');".'">'.get_string('all').'</a>';
+    echo ' / ';
+    echo '<a href="'."javascript:reset_all_in('INPUT','select_','TD','itemselect',null,'none');".'">'.get_string('none').'</a>';
+?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('title', 'block_ungraded_activities') ?>:<?php helpbutton('title', get_string('title', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><input type="text" name="title" size="30" value="<?php p($this->block->config->title) ?>" /></td>
+<td class="itemselect"><?php print_checkbox('select_title', 1, false) ?></td>
+</tr>
+
+<tr class="sectionheading"><th colspan="2"><a name="activities"><?php print_string('activities')?></a></th><td><?php echo $savebutton ?></td></tr>
+
+<tr>
+<td class="itemname"><?php
+    $reset = array();
+
+    $configs = $this->block->get_activity_configs();
+    foreach ($configs as $config) {
+        if ($this->block->config->$config) {
+            $reset[] = $config;
+        }
+    }
+
+    if (count($reset)==count($configs)) {
+        $reset = '';
+    } else {
+        $reset = '{'.implode(':true,', $reset).':true}'; // JSON object (= associative array)
+        $reset = ''
+            .'<a href="'."javascript:reset_all_in('INPUT','show','DIV','activitytypes',null,$reset);".'">'.get_string('reset').'</a>'
+            .' / '
+        ;
+    }
+
+    print_string('showactivities', 'block_ungraded_activities');
+    echo ':';
+    helpbutton('showactivities', get_string('showactivities', 'block_ungraded_activities'), 'block_ungraded_activities');
+    echo '<div class="smalltext">';
+    echo '<a href="'."javascript:reset_all_in('INPUT','show','DIV','activitytypes',null,'all');".'">'.get_string('all').'</a>';
+    echo ' / '.$reset;
+    echo '<a href="'."javascript:reset_all_in('INPUT','show','DIV','activitytypes',null,'none');".'">'.get_string('none').'</a>';
+    echo '</div>';
+?></td>
+<td class="itemvalue"><?php
+    echo '<div class="activitytypes">';
+    foreach ($configs as $config) {
+        print_checkbox ($config, 1, $this->block->config->$config, get_string($config, 'block_ungraded_activities'));
+        echo '<br />';
+    }
+    echo '</div>';
+?></td>
+<td class="itemselect"><?php print_checkbox('select_activitytypes', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('textlength', 'block_ungraded_activities') ?>:<?php helpbutton('textlength', get_string('textlength', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php
+
+    // pick out mod names and languages used in this course
+    $modnames = array();
+    $langs = array('' => get_string('default'));
+
+    $modinfo = get_fast_modinfo($GLOBALS['COURSE'], $GLOBALS['USER']->id);
+
+    foreach ($modinfo->cms as $cmid => $cm) {
+        if ($cm->modname=='label') {
+            continue; // ignore labels
+        }
+        if (empty($modnames[$cm->modname])) {
+            $modnames[$cm->modname] = get_string('modulenameplural', $cm->modname);
+        }
+
+        // get language, if any
+        if (preg_match_all('/<span[^>]*class="multilang"[^>]*>/', $cm->name, $matches)) {
+            foreach ($matches[0] as $match) {
+                if (preg_match('/lang="(\w+)"/', $match, $lang)) {
+                    $lang = substr($lang[1], 0, 2);
+                    $langs[$lang] = '';
+                }
+            }
+        }
+    }
+
+    foreach (get_list_of_languages() as $lang => $text) {
+        $lang = substr($lang, 0, 2);
+        if (isset($langs[$lang])) {
+            $langs[$lang] = $text;
+        }
+    }
+
+    ksort($langs);
+    asort($modnames);
+
+    foreach ($langs as $lang => $text) {
+
+        $lang = substr($lang, 0, 2);
+        $namelength = 'namelength'.$lang;
+        $headlength = 'headlength'.$lang;
+        $taillength = 'taillength'.$lang;
+
+        if ($lang) {
+            echo '<br />';
+        }
+
+        echo '<small>'.get_string('total', 'block_ungraded_activities').':</small> ';
+        echo '<input type="text" name="'.$namelength.'" size="2" value="'.(isset($this->block->config->$namelength) ? $this->block->config->$namelength : $this->block->config->namelength).'" />';
+        echo ' &nbsp; ';
+        echo '<small>'.get_string('head', 'block_ungraded_activities').':</small> ';
+        echo '<input type="text" name="'.$headlength.'" size="2" value="'.(isset($this->block->config->$headlength) ? $this->block->config->$headlength : $this->block->config->headlength).'" />';
+        echo ' &nbsp; ';
+        echo '<small>'.get_string('tail', 'block_ungraded_activities').':</small> ';
+        echo '<input type="text" name="'.$taillength.'" size="2" value="'.(isset($this->block->config->$taillength) ? $this->block->config->$taillength : $this->block->config->taillength).'" />';
+        echo ' &nbsp; ';
+        echo '<small>'.$text.'</small>';
+    }
+?></td>
+<td class="itemselect"><?php print_checkbox('select_textlength', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('showcountitems', 'block_ungraded_activities') ?>:<?php helpbutton('showcountitems', get_string('showcountitems', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php choose_from_menu_yesno('showcountitems', $this->block->config->showcountitems) ?></td>
+<td class="itemselect"><?php print_checkbox('select_showcountitems', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('checkoverrides', 'block_ungraded_activities') ?>:<?php helpbutton('checkoverrides', get_string('checkoverrides', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php
+    $options = array(
+        0 => get_string('no'),
+        1 => get_string('checkoverrides1', 'block_ungraded_activities'), // ignore overridden activities
+        2 => get_string('checkoverrides2', 'block_ungraded_activities')  // ignore activities overridden since submission
+    );
+    choose_from_menu($options, 'checkoverrides', $this->block->config->checkoverrides, '');
+?></td>
+<td class="itemselect"><?php print_checkbox('select_checkoverrides', 1, false) ?></td>
+</tr>
+
+<tr class="sectionheading"><th colspan="2"><a name="users"><?php print_string('users')?></a></th><td><?php echo $savebutton ?></td></tr>
+
+<tr>
+<td class="itemname"><?php print_string('showuserlist', 'block_ungraded_activities') ?>:<?php helpbutton('showuserlist', get_string('showuserlist', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php
+    $options = array(
+        0 => get_string('no'),
+        1 => get_string('showuserlist1', 'block_ungraded_activities'), // yes - collapsed
+        2 => get_string('showuserlist2', 'block_ungraded_activities')  // yes - expanded
+    );
+    choose_from_menu($options, 'showuserlist', $this->block->config->showuserlist, '');
+?></td>
+<td class="itemselect"><?php print_checkbox('select_title', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('showusertype', 'block_ungraded_activities') ?>:<?php helpbutton('showusertype', get_string('showusertype', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php
+    $options = array(
+        0 => get_string('showusertype0', 'block_ungraded_activities'), // enrolled students
+        1 => get_string('showusertype1', 'block_ungraded_activities'), // all students
+        2 => get_string('showusertype2', 'block_ungraded_activities')  // all users
+    );
+    choose_from_menu($options, 'showusertype', $this->block->config->showusertype, '');
+?></td>
+<td class="itemselect"><?php print_checkbox('select_showusertype', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('adduserlinks', 'block_ungraded_activities') ?>:<?php helpbutton('adduserlinks', get_string('adduserlinks', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php choose_from_menu_yesno('adduserlinks', $this->block->config->adduserlinks) ?></td>
+<td class="itemselect"><?php print_checkbox('select_adduserlinks', 1, false) ?></td>
+</tr>
+
+<tr class="sectionheading"><th colspan="2"><a name="date"><?php print_string('date')?></a></th><td><?php echo $savebutton ?></td></tr>
+
+<tr>
+<td class="itemname"><?php print_string('showtimes', 'block_ungraded_activities') ?>:<?php helpbutton('showtimes', get_string('showtimes', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php choose_from_menu_yesno('showtimes', $this->block->config->showtimes) ?></td>
+<td class="itemselect"><?php print_checkbox('select_showtimes', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('moodledatefmt', 'block_ungraded_activities') ?>:<?php helpbutton('moodledatefmt', get_string('moodledatefmt', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php
+    $time = time();
+    $fixdaymonth = $this->block->config->fixdaymonth;
+    $forexample = get_string('forexample', 'block_ungraded_activities');
+
+    $string = array();
+    include($CFG->dirroot.'/lang/en_utf8/langconfig.php');
+    $options = array_flip(preg_grep('/^strftime(da|re)/', array_keys($string)));
+
+    // add examples of each date format string
+    foreach (array_keys($options) as $i => $option) {
+        $fmt = get_string($option);
+        $userdate = userdate($time, $fmt, 99, $fixdaymonth, $fixdaymonth);
+
+        $onclick = 'toggledateformat(this, '.$i.')';
+        $img = '<img src="../pix/t/switch_plus.gif" onclick="'.$onclick.'" />';
+
+        $options[$option] = $userdate.' '.$img.'<div class="dateformat" style="display: none;" id="dateformat'.$i.'">'.$option.': '.$fmt.'</div>';
+    }
+
+    asort($options);
+    choose_from_radio($options, 'moodledatefmt', $this->block->config->moodledatefmt, '');
+?></td>
+<td class="itemselect"><?php print_checkbox('select_moodledatefmt', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('customdatefmt', 'block_ungraded_activities') ?>:<?php helpbutton('customdatefmt', get_string('customdatefmt', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue">
+    <input type="text" name="customdatefmt" size="30" value="<?php p($this->block->config->customdatefmt) ?>" />
+    <small><a href="http://php.net/manual/<?php p(substr(current_language(), 0, 2)) ?>/function.strftime.php" target="_blank"><?php print_string('help') ?></a></small>
+</td>
+<td class="itemselect"><?php print_checkbox('select_customdatefmt', 1, false) ?></td>
+</tr>
+
+<tr>
+<td class="itemname"><?php print_string('fixdaymonth', 'block_ungraded_activities') ?>:<?php helpbutton('fixdaymonth', get_string('fixdaymonth', 'block_ungraded_activities'), 'block_ungraded_activities') ?></td>
+<td class="itemvalue"><?php choose_from_menu_yesno('fixdaymonth', $this->block->config->fixdaymonth) ?></td>
+<td class="itemselect"><?php print_checkbox('select_fixdaymonth', 1, false) ?></td>
+</tr>
+
+<?php if ($count = count($my_other_courses)) { ?>
+<tr class="sectionheading"><th colspan="2"><a name="applyselectedvalues"><?php print_string('applyselectedvalues', 'block_ungraded_activities')?></a></th><td><?php echo $savebutton ?></td></tr>
+
+<tr>
+<td class="itemname"><?php print_string('courses') ?>:<?php
+    helpbutton('mycourses', get_string('courses'), 'block_ungraded_activities');
+    if ($count > 1) {
+        echo '<br /><small><a href="#" onclick="return select_all_courses(true)">'.get_string('all').'</a>';
+        echo ' / ';
+        echo '<a href="#" onclick="return select_all_courses(false)">'.get_string('none').'</a></small>';
+    }
+?></td>
+<td class="itemvalue" colspan="2"><?php
+    if ($count > 1) {
+        choose_from_menu($my_other_courses, 'mycourses[]', '', '', '', '0', false, false, 0, '', true, true);
+    } else {
+        choose_from_menu($my_other_courses, 'mycourses[]', '', ' ');
+    }
+?></td>
+</tr>
+<?php } ?>
+
+</table>
+
+<script type="text/javascript">
+//<![CDATA[
+if(new cookie('quizportnavigationblock:showmenu').read()) {
+    showhide_menu();
+}
+//]]>
+</script>
+<?php
+    // unset variables used in this file
+    unset($configs, $config, $fixdaymonth, $fmt, $forexample, $options, $option, $string, $time, $userdate);
+?>

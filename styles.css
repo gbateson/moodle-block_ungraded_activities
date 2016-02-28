@@ -1,0 +1,88 @@
+/**
+ * blocks/ungraded_activities/styles.php
+ *
+ * @package   block_ungraded_activities
+ * @copyright 2011 Gordon Bateson <gordon.bateson@gmail.com>
+ * @license   you may not copy of distribute any part of this package without prior written permission
+ */
+
+/*
+ * styles for block settings edit form
+ */
+
+#block_ungraded_activities_edit_form div.fitem {
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+#block_ungraded_activities_edit_form div.fitem div.fitemtitle {
+	margin-bottom: 1px;
+	margin-right: 6px;
+	margin-top: 5px;
+    min-width: 240px;
+}
+
+#block_ungraded_activities_edit_form div.fitem .felement {
+	margin-bottom: 1px;
+	margin-top: 5px;
+    width: auto;
+}
+
+#block_ungraded_activities_edit_form div.fitem div.itemselect {
+    background-color: pink;
+    float: right;
+    text-align: center;
+    width: 72px;
+}
+
+/*
+ * styles for the ungraded_activities block
+ */
+
+div.block_ungraded_activities div.ungradedactivity {
+    padding: 2px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+div.block_ungraded_activities div.ungradedactivity img.activityicon {
+    margin: 0px 4px 0px 0px;
+    padding: 0px;
+    vertical-align: text-top;
+}
+div.block_ungraded_activities ul.ungradeditems {
+    list-style: none;
+    margin: 0px 10px 0px 20px;
+    padding: 0px;
+}
+div.block_ungraded_activities ul.ungradeditems li.ungradeditem {
+    border: 1px dotted;
+    margin: 4px 0px;
+    padding: 0px 4px;
+    font-size: 0.75em;
+}
+div.block_ungraded_activities ul.ungradeditems li.ungradeditem a {
+    cursor: pointer;
+}
+/* ======================================== **
+    we must include div.content in the next
+    selector so that we override the css in
+    the custom_corners theme
+    =============================
+    div.sideblock div.content * {
+        text-align: left;
+    }
+** ======================================== */
+div.block_ungraded_activities div.content p {
+    font-size: 0.8em;
+    font-weight: bold;
+    line-height: 1.2em;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+div.block_ungraded_activities div.content div.footer img.refreshicon {
+    height: 16px;
+    width: 16px;
+    margin-left: 4px;
+    vertical-align: text-top;
+}
