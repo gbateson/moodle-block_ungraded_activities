@@ -27,5 +27,5 @@
 $plugin->component = 'block_ungraded_activities';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->requires  = 2010112400; // Moodle 2.0
-$plugin->version   = 2016022808;
-$plugin->release   = '2016-02-28 (08)';
+$plugin->version   = 2016022809;
+$plugin->release   = '2016-02-28 (09)';
