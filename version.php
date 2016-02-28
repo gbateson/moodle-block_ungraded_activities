@@ -14,8 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * block/ungraded_activities/version.php
+ *
+ * @package    blocks
+ * @subpackage ungraded_activities
+ * @copyright  2014 Gordon Bateson (gordon.bateson@gmail.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since      Moodle 2.0
+ */
+
 $plugin->component = 'block_ungraded_activities';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->requires  = 2010112400; // Moodle 2.0
-$plugin->version   = 2015090907;
-$plugin->release   = '2015-09-09 (07)';
+$plugin->version   = 2016022808;
+$plugin->release   = '2016-02-28 (08)';

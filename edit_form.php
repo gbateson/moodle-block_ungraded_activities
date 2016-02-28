@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * blocks/ungraded_activities/mod_form.php
+ * blocks/ungraded_activities/edit_form.php
  *
  * @package    blocks
- * @subpackage taskchain_navigatino
+ * @subpackage ungraded_activities
  * @copyright  2014 Gordon Bateson (gordon.bateson@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 2.0
@@ -31,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * block_ungraded_activities_mod_form
  *
- * @copyright  2014 Gordon Bateson (gordon.bateson@gmail.com)
+ * @copyright 2014 Gordon Bateson (gordon.bateson@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 2.0
  * @package    mod
