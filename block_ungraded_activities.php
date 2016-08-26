@@ -380,23 +380,43 @@ class block_ungraded_activities extends block_base {
         }
 
         // set date format string
-        if (! $fmt = $this->config->customdatefmt) {
-            if (! $fmt = $this->config->moodledatefmt) {
-                $fmt = 'strftimedatetime'; // default: 26 April 2011, 04:10 pm
+        if (! $dateformat = $this->config->customdatefmt) {
+            if (! $dateformat = $this->config->moodledatefmt) {
+                $dateformat = 'strftimedatetime'; // default: 26 April 2011, 04:10 pm
             }
-            $fmt = get_string($fmt);
+            $dateformat = get_string($dateformat);
         }
 
         // settings to remove leading zeros from dates
         // for userdate() in "moodlelib.php"
-        $fixday = $this->config->fixdaymonth;
-        $fixmonth = $this->config->fixdaymonth;
+        if ($fixmonth = ($this->config->fixdaymonth && is_numeric(strpos($dateformat, '%m')))) {
+            $dateformat = str_replace('%m', 'MM', $dateformat);
+        }
+        if ($fixday = ($this->config->fixdaymonth && is_numeric(strpos($dateformat, '%d')))) {
+            $dateformat = str_replace('%d', 'DD', $dateformat);
+        }
+        if ($fixhour = ($this->config->fixdaymonth && is_numeric(strpos($dateformat, '%I')))) {
+            $dateformat = str_replace('%I', 'II', $dateformat);
+        }
+        $fixdate = ($fixmonth || $fixday || $fixhour);
 
         if (function_exists('sesskey')) {
             $sesskey = '&sesskey='.sesskey();
         } else {
             $sesskey = '';
         }
+
+        // set sprintf format string for grades
+        $params = array('courseid' => $COURSE->id,
+                        'name'     => 'decimalpoints');
+        if ($DB->record_exists('grade_settings', $params)) {
+            $gradeformat = $DB->get_field('grade_settings', 'value', $params);
+        } else if (isset($CFG->grade_decimalpoints)) {
+            $gradeformat = $CFG->grade_decimalpoints;
+        } else {
+            $gradeformat = 0; // shouldn't happen !!
+        }
+        $gradeformat = '%0.'.$gradeformat.'f';
 
         // cache for scales, if any, that are used
         $scales = array();
@@ -526,7 +546,7 @@ class block_ungraded_activities extends block_base {
                         }
                         $this->content->text .= '<a href="'.$href.'" title="'.$linktitle.'" onclick="'."this.target='_blank'".'">'.$userfullname.'</a>';
 
-                        $grade = $item->grade;
+                        $grade = sprintf($gradeformat, $item->grade);
                         $maxgrade = $item->maxgrade;
 
                         if ($grade===null || $grade==='' || $grade < 0) {
@@ -544,7 +564,28 @@ class block_ungraded_activities extends block_base {
                         }
 
                         if ($this->config->showtimes) {
-                            $this->content->text .= ' '.userdate($item->timemodified, $fmt, 99, $fixday, $fixmonth);
+                            $userdate = userdate($item->timemodified, $dateformat, 99, false, false);
+                            if ($fixdate) {
+                                $search = array(' 0', ' ');
+                                $replace = array();
+                                if ($fixmonth) {
+                                    $date = strftime(' %m', $item->timemodified);
+                                    $date = str_replace($search, '', $date);
+                                    $replace['MM'] = ltrim($date);
+                                }
+                                if ($fixday) {
+                                    $date = strftime(' %d', $item->timemodified);
+                                    $date = str_replace($search, '', $date);
+                                    $replace['DD'] = ltrim($date);
+                                }
+                                if ($fixhour) {
+                                    $date = strftime(' %I', $item->timemodified);
+                                    $date = str_replace($search, '', $date);
+                                    $replace['II'] = ltrim($date);
+                                }
+                                $userdate = strtr($userdate, $replace);
+                            }
+                            $this->content->text .= ' '.$userdate;
                         }
 
                         $this->content->text .= '</li>';
