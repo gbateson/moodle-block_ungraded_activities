@@ -59,11 +59,12 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $this->add_header($mform, $plugin, 'title');
         //-----------------------------------------------------------------------------
 
-        $element = $mform->addElement('static', 'description', get_string('description'), get_string('blockdescription', $plugin));
+        $this->add_field_description($mform, $plugin, 'description');
 
         $name = 'title';
         $config_name = 'config_'.$name;
-        $mform->addElement('text', $config_name, get_string($name, $plugin), array('size' => 50));
+        $label = get_string($name, $plugin);
+        $mform->addElement('text', $config_name, $label, array('size' => 50));
         $mform->setType($config_name, PARAM_TEXT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
@@ -77,19 +78,21 @@ class block_ungraded_activities_edit_form extends block_edit_form {
 
         $name = 'showcountitems';
         $config_name = 'config_'.$name;
-        $mform->addElement('selectyesno', $config_name, get_string($name, $plugin));
+        $label = get_string($name, $plugin);
+        $mform->addElement('selectyesno', $config_name, $label);
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
 
         $name = 'checkoverrides';
         $config_name = 'config_'.$name;
+        $label = get_string($name, $plugin);
         $options = array(
             0 => get_string('no'),
             1 => get_string('checkoverrides1', $plugin), // ignore overridden activities
             2 => get_string('checkoverrides2', $plugin)  // ignore activities overridden since submission
         );
-        $mform->addElement('select', $config_name, get_string($name, $plugin), $options);
+        $mform->addElement('select', $config_name, $label, $options);
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
@@ -100,31 +103,34 @@ class block_ungraded_activities_edit_form extends block_edit_form {
 
         $name = 'showuserlist';
         $config_name = 'config_'.$name;
+        $label = get_string($name, $plugin);
         $options = array(
             0 => get_string('no'),
             1 => get_string('showuserlist1', $plugin), // yes - collapsed
             2 => get_string('showuserlist2', $plugin)  // yes - expanded
         );
-        $mform->addElement('select', $config_name, get_string($name, $plugin), $options);
+        $mform->addElement('select', $config_name, $label, $options);
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
 
         $name = 'showusertype';
         $config_name = 'config_'.$name;
+        $label = get_string($name, $plugin);
         $options = array(
             0 => get_string('showusertype0', 'block_ungraded_activities'), // enrolled students
             1 => get_string('showusertype1', 'block_ungraded_activities'), // all students
             2 => get_string('showusertype2', 'block_ungraded_activities')  // all users
         );
-        $mform->addElement('select', $config_name, get_string($name, $plugin), $options);
+        $mform->addElement('select', $config_name, $label, $options);
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
 
         $name = 'adduserlinks';
         $config_name = 'config_'.$name;
-        $mform->addElement('selectyesno', $config_name, get_string($name, $plugin), $options);
+        $label = get_string($name, $plugin);
+        $mform->addElement('selectyesno', $config_name, $label);
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
@@ -135,7 +141,8 @@ class block_ungraded_activities_edit_form extends block_edit_form {
 
         $name = 'showtimes';
         $config_name = 'config_'.$name;
-        $mform->addElement('selectyesno', $config_name, get_string($name, $plugin), $options);
+        $label = get_string($name, $plugin);
+        $mform->addElement('selectyesno', $config_name, $label);
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
@@ -145,7 +152,8 @@ class block_ungraded_activities_edit_form extends block_edit_form {
 
         $name = 'fixdaymonth';
         $config_name = 'config_'.$name;
-        $mform->addElement('selectyesno', $config_name, get_string($name, $plugin));
+        $label = get_string($name, $plugin);
+        $mform->addElement('selectyesno', $config_name, $label);
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
@@ -159,8 +167,9 @@ class block_ungraded_activities_edit_form extends block_edit_form {
 
                 $name = 'mycourses';
                 $config_name = 'config_'.$name;
+                $label = get_string($name, $plugin);
                 $params = array('multiple' => 'multiple', 'size' => min(5, count($mycourses)));
-                $mform->addElement('select', $config_name, get_string($name, $plugin), $mycourses, $params);
+                $mform->addElement('select', $config_name, $label, $mycourses, $params);
                 $mform->setType($config_name, PARAM_INT);
                 $mform->setDefault($config_name, $this->defaultvalue($name));
                 $mform->addHelpButton($config_name, $name, $plugin);
@@ -281,6 +290,37 @@ class block_ungraded_activities_edit_form extends block_edit_form {
     }
 
     /**
+     * add_field_description
+     *
+     * @param object  $mform
+     * @param string  $plugin
+     * @param string  $name of field
+     * @return void, but will update $mform
+     */
+    protected function add_field_description($mform, $plugin, $name) {
+        global $OUTPUT;
+
+        $label = get_string($name);
+        $text = get_string('block'.$name, $plugin);
+
+        $params = array('id' => $this->block->instance->id);
+        $params = array('href' => new moodle_url('/blocks/ungraded_activities/export.php', $params));
+
+        $text .= html_writer::empty_tag('br');
+        $text .= html_writer::tag('a', get_string('exportsettings', $plugin), $params);
+        $text .= ' '.$OUTPUT->help_icon('exportsettings', $plugin);
+
+        $params = array('id' => $this->block->instance->id);
+        $params = array('href' => new moodle_url('/blocks/ungraded_activities/import.php', $params));
+
+        $text .= html_writer::empty_tag('br');
+        $text .= html_writer::tag('a', get_string('importsettings', $plugin), $params);
+        $text .= ' '.$OUTPUT->help_icon('importsettings', $plugin);
+
+        $mform->addElement('static', $name, $label, $text);
+    }
+
+    /**
      * add_field_showactivities
      *
      * @param object  $mform
@@ -362,7 +402,8 @@ class block_ungraded_activities_edit_form extends block_edit_form {
 
         $name = 'textlength';
         $elements_name = 'elements_'.$name;
-        $mform->addGroup($elements, $elements_name, get_string($name, $plugin), ' ', false);
+        $label = get_string($name, $plugin);
+        $mform->addGroup($elements, $elements_name, $label, ' ', false);
         $mform->addHelpButton($elements_name, $name, $plugin);
 
         foreach ($elements as $element) {
@@ -385,9 +426,9 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $name = 'moodledatefmt';
         $config_name = 'config_'.$name;
         $elements_name = 'elements_'.$name;
+        $label = get_string($name, $plugin);
 
         $time = time();
-        $fixdaymonth = $this->block->config->fixdaymonth;
         $switch_plus = $PAGE->theme->pix_url('t/switch_plus', 'core')->out();
 
         $string = array();
@@ -398,7 +439,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $elements = array();
         foreach (array_keys($options) as $i => $option) {
             $fmt = get_string($option);
-            $text = userdate($time, $fmt, 99, $fixdaymonth, $fixdaymonth);
+            $text = userdate($time, $fmt);
 
             $params = array('src' => $switch_plus, 'onclick' => 'toggledateformat(this, '.$i.')');
             $text .= ' '.html_writer::empty_tag('img', $params);
@@ -431,9 +472,9 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $js .= "</script>\n";
         $elements[] = $mform->createElement('static', '', '', $js);
 
-        $mform->addGroup($elements, $elements_name, get_string($name, $plugin), html_writer::empty_tag('br'), false);
+        $mform->addGroup($elements, $elements_name, $label, html_writer::empty_tag('br'), false);
         $mform->addHelpButton($elements_name, $name, $plugin);
-        $mform->setType($config_name, PARAM_INT);
+        $mform->setType($config_name, PARAM_ALPHANUM);
         $mform->setDefault($config_name, $this->defaultvalue($name));
     }
 
@@ -465,17 +506,18 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $name = 'customdatefmt';
         $config_name = 'config_'.$name;
         $elements_name = 'elements_'.$name;
+        $label = get_string($name, $plugin);
 
         $help = 'http://php.net/manual/'.substr(current_language(), 0, 2).'/function.strftime.php';
         $help = html_writer::tag('a', get_string('help'), array('href' => $help, 'target' => '_blank'));
         $help = html_writer::tag('small', $help);
 
         $elements = array(
-            $mform->createElement('text', $config_name, get_string($name, $plugin), array('size' => 30)),
+            $mform->createElement('text', $config_name, $label, array('size' => 30)),
             $mform->createElement('static', '', '', $help)
         );
 
-        $mform->addGroup($elements, $elements_name, get_string($name, $plugin), ' ', false);
+        $mform->addGroup($elements, $elements_name, $label, ' ', false);
         $mform->addHelpButton($elements_name, $name, $plugin);
         $mform->setType($config_name, PARAM_TEXT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
@@ -539,17 +581,20 @@ class block_ungraded_activities_edit_form extends block_edit_form {
      * @return void, but will update $mform
      */
     protected function add_importexport($mform, $plugin) {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
+
+        $exportlink = new moodle_url('/blocks/ungraded_activities/export.php', array('id' => $this->block->instance->id));
+        $importlink = new moodle_url('/blocks/ungraded_activities/import.php', array('id' => $this->block->instance->id));
 
         $str = (object)array(
             'all'        => addslashes_js(get_string('all')),
             'apply'      => addslashes_js(get_string('apply', $plugin)),
             'export'     => addslashes_js(get_string('exportsettings', $plugin)),
             'exporthelp' => addslashes_js($OUTPUT->help_icon('exportsettings', $plugin)),
-            'exportlink' => addslashes_js($CFG->wwwroot.'/blocks/ungraded_activities/export.php?id='.$this->block->instance->id),
+            'exportlink' => addslashes_js($exportlink),
             'import'     => addslashes_js(get_string('importsettings', $plugin)),
             'importhelp' => addslashes_js($OUTPUT->help_icon('importsettings', $plugin)),
-            'importlink' => addslashes_js($CFG->wwwroot.'/blocks/ungraded_activities/import.php?id='.$this->block->instance->id),
+            'importlink' => addslashes_js($importlink),
             'none'       => addslashes_js(get_string('none')),
             'select'     => addslashes_js(get_string('selectallnone', $plugin)),
             'selecthelp' => addslashes_js($OUTPUT->help_icon('selectallnone', $plugin))

@@ -19,178 +19,95 @@
  *
  * @package    blocks
  * @subpackage ungraded_activities
- * @copyright  2014 Gordon Bateson (gordon.bateson@gmail.com)
+ * @copyright  2014 Gordon Bateson <gordon.bateson@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 2.0
  */
 
+/** Include required files */
 require_once('../../config.php');
 require_once($CFG->dirroot.'/lib/xmlize.php');
-require_once($CFG->dirroot.'/lib/uploadlib.php');
+require_once($CFG->dirroot.'/blocks/ungraded_activities/import_form.php');
 
-$id = required_param('id', PARAM_INT); // block_instance id
+// cache the plugin name  - because it is quite long ;-)
+$plugin = 'block_ungraded_activities';
 
-if (! $block_instance = get_record('block_instance', 'id', $id)) {
-    print_error('invalidinstanceid', 'block_ungraded_activities');
+// get the incoming block_instance id
+$id = required_param('id', PARAM_INT);
+
+if (! $block_instance = $DB->get_record('block_instances', array('id' => $id))) {
+    print_error('invalidinstanceid', $plugin, '', $id);
 }
-
-if (! $block = get_record('block', 'id', $block_instance->blockid)) {
-    print_error('invalidblockid', 'block_ungraded_activities', $block_instance->blockid);
+if (! $block = $DB->get_record('block', array('name' => $block_instance->blockname))) {
+    print_error('invalidblockname', $plugin, '', $block_instance);
 }
-
-if (! $course = get_record('course', 'id', $block_instance->pageid)) {
-    print_error('invalidcourseid', 'block_ungraded_activities', $block_instance->pageid);
+if (! $context = $DB->get_record('context', array('id' => $block_instance->parentcontextid))) {
+    print_error('invalidcontextid', $plugin, '', $block_instance);
+}
+if (! $course = $DB->get_record('course', array('id' => $context->instanceid))) {
+    print_error('invalidcourseid', $plugin, '', $context);
 }
 
 require_login($course->id);
 
-$context = get_context_instance(CONTEXT_COURSE, $course->id);
+if (class_exists('context')) {
+    $context = context::instance_by_id($context->id);
+} else {
+    $context = get_context_instance_by_id($context->id);
+}
 require_capability('moodle/site:manageblocks', $context);
 
-if (optional_param('cancel', '', PARAM_ALPHA)) {
-    $url = $CFG->wwwroot.'/course/view.php?id='.$course->id.'&instanceid='.$block_instance->id.'&blockaction=config';
-    if (function_exists('sesskey')) {
-        $url .= '&sesskey='.sesskey();
-    }
-    // return to block config page
-    redirect($url);
+// $SCRIPT is set by initialise_fullme() in 'lib/setuplib.php'
+// It is the path below $CFG->wwwroot of this script
+$url = new moodle_url($SCRIPT, array('id' => $id));
+
+// initialize form
+$mform = new block_ungraded_activities_import_form($url);
+
+if ($mform->is_cancelled()) {
+    $params = array('id' => $course->id,
+                    'sesskey' => sesskey(),
+                    'bui_editid' => $block_instance->id);
+    redirect(new moodle_url('/course/view.php', $params));
 }
 
-$blockname = get_string('blockname', 'block_ungraded_activities');
-$importsettings = get_string('importsettings', 'block_ungraded_activities');
+$blockname = get_string('blockname', $plugin);
+$pagetitle = get_string('importsettings', $plugin);
 
-$navlinks = array(
-    array('name' => get_string('blocks'), 'link' => '', 'type' => 'title'),
-    array('name' => $blockname, 'link' => '', 'type' => 'title'),
-    array('name' => $importsettings, 'link' => '', 'type' => 'title')
-);
+$PAGE->set_url($url);
+$PAGE->set_title($pagetitle);
+$PAGE->set_heading($course->fullname);
+$PAGE->set_pagelayout('incourse');
+$PAGE->navbar->add($blockname);
+$PAGE->navbar->add($pagetitle, $url);
 
-print_header($course->fullname, $blockname, build_navigation($navlinks));
-print_heading($blockname.': '.$importsettings);
-print_box_start('generalbox');
+echo $OUTPUT->header();
+echo $OUTPUT->heading($pagetitle);
+echo $OUTPUT->box_start('generalbox');
 
-if (data_submitted()) {
-    // import settings from xml file
-
-    // check session
-    if (function_exists('require_sesskey')) {
-        require_sesskey();
-    } else if (function_exists('confirm_sesskey')) {
-        confirm_sesskey();
-    }
-
-    // get upload manager and do standard check on uploaded file
-    $um = new upload_manager('', false, false, $course);
-    if ($um->preprocess_files() && ungraded_activities_import($block_instance)) {
+if ($xml = $mform->get_file_content('importfile')) {
+    if ($mform->import($xml, $block_instance, $course)) {
         // successful import
-        $msg   = get_string('validimportfile', 'block_ungraded_activities');
+        $msg   = get_string('validimportfile', $plugin);
         $style = 'notifysuccess';
-        $url   = $CFG->wwwroot.'/course/view.php?id='.$course->id;
     } else {
         // import didn't work - shouldn't happen !!
-        $msg   = get_string('invalidimportfile', 'block_ungraded_activities');
+        $msg   = get_string('invalidimportfile', $plugin);
         $style = 'notifyproblem';
-        $url   = $CFG->wwwroot.'/blocks/ungraded_activities/import.php?id='.$id;
     }
+    echo $OUTPUT->notification($msg, $style);
 
-    notify($msg, $style);
-    print_continue($url);
+    $params = array('id' => $course->id,
+                    'sesskey' => sesskey(),
+                    'bui_editid' => $block_instance->id);
+    $url   = new moodle_url('/course/view.php', $params);
+
+    echo $OUTPUT->continue_button($url);
 
 } else {
     // show the import form
-    ungraded_activities_import_form($course, $block_instance);
+    $mform->display();
 }
 
-print_box_end();
-print_footer($course);
-
-/**
- * ungraded_activities_import_form
- *
- * @param xxx $course
- * @param xxx $block_instance
- */
-function ungraded_activities_import_form($course, $block_instance) {
-    global $CFG;
-
-    echo '<form method="post" action="import.php" enctype="multipart/form-data">'."\n";
-    echo '<table border="0" cellpadding="4" cellspacing="4" width="600" style="margin: auto;">'."\n";
-    echo '<tr>'."\n";
-
-    echo '<td align="left" valign="top">'."\n";
-    print_string('filetoimport', 'glossary');
-    echo ' ';
-    helpbutton('filetoimport', get_string('filetoimport', 'glossary'), 'glossary');
-    echo '<br />';
-    echo '<span style="font-size:smaller;">(';
-    print_string('maxsize', '', display_size(get_max_upload_file_size($CFG->maxbytes, $course->maxbytes)));
-    echo ')</span>'."\n";
-    echo '</td>'."\n";
-
-    echo '<td align="left" valign="top">'."\n";
-    upload_print_form_fragment(); // file upload element + trailing <br />
-    echo '<input type="submit" name="import" value="'.get_string('importsettings', 'block_ungraded_activities').'" />'."\n";
-    echo ' &nbsp; &nbsp; ';
-    echo '<input type="submit" name="cancel" value="'.get_string('cancel').'" />'."\n";
-    echo '<input type="hidden" name="id" value="'.$block_instance->id.'" />'."\n";
-    if (function_exists('sesskey')) {
-        echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />'."\n";
-    }
-    echo '</td>'."\n";
-
-    echo '</tr>'."\n";
-    echo '</table>'."\n";
-    echo '</form>'."\n";
-}
-
-/**
- * ungraded_activities_import_form
- *
- * @param xxx $block_instance
- * @return boolean true if import was successful, false otherwise
- */
-function ungraded_activities_import($block_instance) {
-    if (! $file = array_shift($_FILES)) {
-        return false;
-    }
-    if (! isset($file['tmp_name'])) {
-        return false;
-    }
-    if (! file_exists($file['tmp_name'])) {
-        return false;
-    }
-    if (! is_file($file['tmp_name'])) {
-        return false;
-    }
-    if (! is_readable($file['tmp_name'])) {
-        return false;
-    }
-    if (! $xml = file_get_contents($file['tmp_name'])) {
-        return false;
-    }
-    if (! $xml = xmlize($xml, 0)) {
-        return false;
-    }
-    if (! isset($xml['UNGRADEDACTIVITIESBLOCK']['#']['CONFIGFIELDS'][0]['#']['CONFIGFIELD'])) {
-        return false;
-    }
-
-    $configfield = &$xml['UNGRADEDACTIVITIESBLOCK']['#']['CONFIGFIELDS'][0]['#']['CONFIGFIELD'];
-    $config = unserialize(base64_decode($block_instance->configdata));
-
-    $i = 0;
-    while (isset($configfield[$i]['#'])) {
-        $name = $configfield[$i]['#']['NAME'][0]['#'];
-        $value = $configfield[$i]['#']['VALUE'][0]['#'];
-        $config->$name = $value;
-        $i++;
-    }
-
-    if ($i==0) {
-        return false;
-    }
-
-    $block_instance->configdata = base64_encode(serialize($config));
-    set_field('block_instance', 'configdata', $block_instance->configdata, 'id', $block_instance->id);
-    return true;
-}
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer($course);

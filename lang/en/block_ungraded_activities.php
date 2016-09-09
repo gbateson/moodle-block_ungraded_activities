@@ -64,7 +64,7 @@ $string['customdatefmt_help'] = 'Any string specified here will be used to forma
 
 The format codes are those used by the PHP &quot;strftime&quot; function. More information about these codes is available via the &quot;Help&quot; link next to the textbox for this setting.';
 $string['fixdaymonth'] = 'Remove leading zeros in dates';
-$string['exportsettings'] = 'Export';
+$string['exportsettings'] = 'Export settings';
 $string['exportsettings_help'] = 'This link allows you export the configuration settings for this block to a file that you can import into a similar block in another course.';
 $string['fixdaymonth_help'] = '**Yes**
 : the leading zero on day and month numbers less than 10 will be removed
@@ -73,9 +73,13 @@ $string['fixdaymonth_help'] = '**Yes**
 : day and month numbers less than 10 will be displayed as 01, 02, 03 and so on.';
 $string['forexample'] = 'e.g.';
 $string['head'] = 'Head';
-$string['importsettings'] = 'Import';
+$string['importsettings'] = 'Import settings';
 $string['importsettings_help'] = 'This link takes you to a screen where you can import configuration settings from a configuration settings file exported from the same type of block in another course.';
+$string['invalidblockname'] = 'Invalid block name in block instance record: id={$a->id}, blockname={$a->blockname}';
+$string['invalidcontextid'] = 'Invalid parentcontextid in block instance record: id = {$a->id}, parentcontextid = {$a->parentcontextid}';
+$string['invalidcourseid'] = 'Invalid instanceid in course context record: id={$a->id}, instanceid={$a->instanceid}';
 $string['invalidimportfile'] = 'Import file was missing, empty or invalid';
+$string['invalidinstanceid'] = 'Invalid block instance id: id = {$a}';
 $string['moodledatefmt'] = 'Moodle date format string';
 $string['moodledatefmt_help'] = 'The dates of ungraded submissions will be formatted in a similar way to the date selected here.
 

@@ -54,6 +54,12 @@
     width: 72px;
 }
 
+#block_ungraded_activities_edit_form div.dateformat {
+    height: 0px;
+    font-size: 0.8em;
+    margin-left: 24px;
+}
+
 /*
  * styles for the ungraded_activities block
  */
