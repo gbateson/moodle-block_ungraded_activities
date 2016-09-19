@@ -163,7 +163,7 @@ class block_ungraded_activities extends block_base {
             }
             switch ($name) {
                 case 'textlength':
-                    $langs = $translations = get_string_manager()->get_list_of_translations();
+                    $langs = get_string_manager()->get_list_of_translations();
                     $langs = array_keys($langs);
                     array_unshift($langs, '');
                     foreach ($langs as $lang) {
