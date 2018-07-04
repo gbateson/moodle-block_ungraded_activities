@@ -428,8 +428,15 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $elements_name = 'elements_'.$name;
         $label = get_string($name, $plugin);
 
+        // cache name of method to create image URLs
+        if (method_exists($PAGE->theme, 'image_url')) {
+            $image_url = 'image_url'; // Moodle >= 3.3
+        } else {
+            $image_url = 'pix_url'; // Moodle <= 3.2
+        }
+
         $time = time();
-        $switch_plus = $PAGE->theme->pix_url('t/switch_plus', 'core')->out();
+        $switch_plus = $PAGE->theme->$image_url('t/switch_plus', 'core')->out();
 
         $string = array();
         include($CFG->dirroot.'/lang/en/langconfig.php');

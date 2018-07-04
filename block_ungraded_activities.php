@@ -263,8 +263,15 @@ class block_ungraded_activities extends block_base {
             $this->content->text = html_writer::tag('p', $text, $params);
         }
 
+        // cache name of method to create image URLs
+        if (method_exists($PAGE->theme, 'image_url')) {
+            $image_url = 'image_url'; // Moodle >= 3.3
+        } else {
+            $image_url = 'pix_url'; // Moodle <= 3.2
+        }
+
         // define image for "refresh this page"
-        $img = $PAGE->theme->pix_url('i/reload', 'core')->out();
+        $img = $PAGE->theme->$image_url('i/reload', 'core')->out(); // Moodle <= 3.2
         $img = html_writer::empty_tag('img', array('class' => 'refreshicon', 'src' => $img));
 
         // add the footer
@@ -326,7 +333,7 @@ class block_ungraded_activities extends block_base {
         foreach ($items as $item) {
             $modname = $item->modname;
             $alt = get_string('modulename', $modname);
-            $src = $PAGE->theme->pix_url('icon', $modname)->out();
+            $src = $PAGE->theme->$image_url('icon', $modname)->out();
             $mods[$modname]->icon = html_writer::empty_tag('img', array('class' => 'activityicon', 'src' => $src, 'alt' => $alt));
 
             $instanceid = $item->instanceid;
