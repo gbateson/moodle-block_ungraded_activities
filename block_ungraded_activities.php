@@ -107,10 +107,14 @@ class block_ungraded_activities extends block_base {
         if (empty($this->config)) {
             $this->config = new stdClass();
         }
-
-        foreach ($defaults as $name => $items) {
+        if (get_class($this->config)=='__PHP_Incomplete_Class') {
+            $this->config = get_object_vars($this->config);
+            $this->config = (object)$this->config;
+            unset($this->config->__PHP_Incomplete_Class_Name);
+        }
+        foreach ($defaults as $name => $value) {
             if (! isset($this->config->$name)) {
-                $this->config->$name = $items;
+                $this->config->$name = $value;
             }
         }
 
