@@ -1,0 +1,76 @@
+========================================
+Change log for block_ungraded_activities
+========================================
+
+2019-07-30 (14)
+ -  Fix errors about incomplete object, caused by class not existing before unserialize 
+
+2018-07-04 (13)
+ -  replace deprecated pix_url with image_url in Moodle >= 3.3 
+
+2016-09-19 (12)
+ -  fix small typing mistake when getting list of languages 
+
+2016-09-09 (11)
+ -  use moodleform style form in export/import scripts 
+
+2016-08-26 (10)
+ -  fix leading zeroes on month/day/hour and use same precision for grades as in the grade book 
+
+2016-02-28 (09)
+ -  remove obsolete config_instance.html 
+
+2016-02-28 (08)
+ -  standardize GPL licensing info 
+
+2015-09-09 (07)
+ -  blocks/ungraded_activities standardize format of release string in version.php 
+
+2015.09.09 (07)
+ -  add 'component' and 'maturity' settings to version.php 
+
+2015.05.06 (06)
+ -  do not add list of activities in setup form, if there are no gradeable activities in the course 
+
+2015.04.20 (05)
+ -  preliminary attemp to handle "assign" module (Moodle >= 2.3) 
+
+2015.03.10 (04)
+ -  fix detection of ungraded essay questions on Moodle >= 2.7 
+
+2015.03.05 (03)
+ -  fix error caused by missing $COURSE->context 
+
+2015.03.05 (03)
+ -  fix error caused by missing $COURSE->context 
+
+2014.12.16 (02)
+ -  add missing capability string for 'addinstance' 
+
+2014.07.01 (01)
+ -  fix transfer of settings to similar blocks in other courses 
+
+2014.07.01 (01)
+ -  comvert 'attforblock' to 'attendance' 
+
+2014.07.01 (01)
+ -  comvert 'attforblock' to 'attendance' 
+
+2014.07.01 (00)
+ -  fix checking of glossary ratings 
+
+2014.07.01 (00)
+ -  fix in_array() expects parameter 2 
+
+2014.07.01 (00)
+ -  fix display of user names and activity icons 
+
+2014.07.01 (00)
+ -  blocks/ungraded_activities preliminary edit_form 
+
+2014.07.01 (00)
+ -  remove hidden OSX files 
+
+2014.07.01 (00)
+ -  create and populate initial version of ungraded_activities 
+ -  moodle.2x add folders for new blocks: activity_list, taskchain_navigation, ungraded_actvities 
