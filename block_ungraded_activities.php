@@ -395,7 +395,7 @@ class block_ungraded_activities extends block_base {
             if (! $dateformat = $this->config->moodledatefmt) {
                 $dateformat = 'strftimedatetime'; // default: 26 April 2011, 04:10 pm
             }
-            $dateformat = get_string($dateformat);
+            $dateformat = get_string($dateformat, 'langconfig');
         }
 
         // settings to remove leading zeros from dates

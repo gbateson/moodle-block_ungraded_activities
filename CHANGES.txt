@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2020-07-05 (17)
+ - get date strings from 'langconfig' lang pack instead of 'moodle'
+
 2019-11-10 (16)
  - standardize layout and spelling in CHANGES.txt
 

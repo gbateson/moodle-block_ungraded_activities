@@ -445,7 +445,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         // add examples of each date format string
         $elements = array();
         foreach (array_keys($options) as $i => $option) {
-            $fmt = get_string($option);
+            $fmt = get_string($option, 'langconfig');
             $text = userdate($time, $fmt);
 
             $params = array('src' => $switch_plus, 'onclick' => 'toggledateformat(this, '.$i.')');
