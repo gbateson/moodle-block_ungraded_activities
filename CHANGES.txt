@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2020-07-05 (18)
+ - perform sanity check on namelength, headlength and taillength to prevent empty activity names
+
 2020-07-05 (17)
  - get date strings from 'langconfig' lang pack instead of 'moodle'
 

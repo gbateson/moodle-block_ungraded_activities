@@ -1133,15 +1133,15 @@ class block_ungraded_activities extends block_base {
     function trim_name($name) {
         $name = self::filter_text($name);
         $name = trim(strip_tags($name));
-
         list($namelength, $headlength, $taillength) = $this->get_namelength();
 
-        $strlen = self::textlib('strlen', $name);
-
-        if ($strlen > $namelength) {
-            $head = self::textlib('substr', $name, 0, $headlength);
-            $tail = self::textlib('substr', $name, $strlen - $taillength, $taillength);
-            $name = $head.' ... '.$tail;
+        if ($namelength && ($headlength || $taillength)) {
+            $strlen = self::textlib('strlen', $name);
+            if ($strlen > $namelength) {
+                $head = self::textlib('substr', $name, 0, $headlength);
+                $tail = self::textlib('substr', $name, $strlen - $taillength, $taillength);
+                $name = $head.' ... '.$tail;
+            }
         }
 
         return $name;
