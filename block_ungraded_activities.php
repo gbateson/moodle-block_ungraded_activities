@@ -741,8 +741,7 @@ class block_ungraded_activities extends block_base {
         $from   = '';
         $where  = '';
 
-        $preferencename = 'quizport_navigation_groupid_'.$COURSE->id;
-        $groupid = get_user_preferences($preferencename, 0);
+        $groupid = groups_get_course_group($COURSE->id, true);
         $groupid = optional_param('groupid', $groupid, PARAM_INT);
 
         // get groupmode: 0=NOGROUPS, 1=VISIBLEGROUPS, 2=SEPARATEGROUPS
