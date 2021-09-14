@@ -35,11 +35,11 @@ $string['ungraded_activities:addinstance'] = 'Add a new Ungraded Activities bloc
 
 // more strings
 $string['adduserlinks'] = 'Add links to user profiles';
-$string['adduserlinks_help'] = '**Yes**
-: the names in the user list will be linked to the each user\'s profile page
+$string['adduserlinks_help'] = '**Yes**  
+&nbsp; the names in the user list will be linked to the each user\'s profile page
 
-**No**
-:the name of each user will displayed without a link to the user\'s profile page';
+**No**  
+&nbsp; the name of each user will displayed without a link to the user\'s profile page';
 
 $string['apply'] = 'Apply';
 $string['applyselectedvalues'] = 'Apply selected values to the following courses';
@@ -50,14 +50,14 @@ $string['checkoverrides_help'] = 'This setting specifies whether or not the bloc
 
 Note that enabling this setting causes extra work for the database server, so the default setting is &quot;No&quot;.
 
-**No**
-:The block will not check to see if activity grades have been overridden in the Moodle gradebook.
+**No**  
+&nbsp; The block will not check to see if activity grades have been overridden in the Moodle gradebook.
 
-**Yes - ignore if overridden**
-: The block will ignore submissions with grades that have been overridden in the gradebook, regardless of whether the work was submitted before or after the grade was overridden.
+**Yes - ignore if overridden**  
+&nbsp; The block will ignore submissions with grades that have been overridden in the gradebook, regardless of whether the work was submitted before or after the grade was overridden.
 
-**Yes - ignore if recently overridden**
-: The block will ignore submissions whose grades has been overridden since the work was submitted. If work was submitted after the grade was overridden, a link will be shown to the page where the teacher can modify the overridden grade.';
+**Yes - ignore if recently overridden**  
+&nbsp; The block will ignore submissions whose grades has been overridden since the work was submitted. If work was submitted after the grade was overridden, a link will be shown to the page where the teacher can modify the overridden grade.';
 $string['checkoverrides1'] = 'Yes - ignore if overridden';
 $string['checkoverrides2'] = 'Yes - ignore if recently overridden';
 $string['customdatefmt_help'] = 'Any string specified here will be used to format the submission dates.
@@ -66,11 +66,11 @@ The format codes are those used by the PHP &quot;strftime&quot; function. More i
 $string['fixdaymonth'] = 'Remove leading zeros in dates';
 $string['exportsettings'] = 'Export settings';
 $string['exportsettings_help'] = 'This link allows you export the configuration settings for this block to a file that you can import into a similar block in another course.';
-$string['fixdaymonth_help'] = '**Yes**
-: the leading zero on day and month numbers less than 10 will be removed
+$string['fixdaymonth_help'] = '**Yes**  
+&nbsp; the leading zero on day and month numbers less than 10 will be removed
 
-**No**
-: day and month numbers less than 10 will be displayed as 01, 02, 03 and so on.';
+**No**  
+&nbsp; day and month numbers less than 10 will be displayed as 01, 02, 03 and so on.';
 $string['forexample'] = 'e.g.';
 $string['head'] = 'Head';
 $string['importsettings'] = 'Import settings';
@@ -109,11 +109,11 @@ $string['showassigns'] = 'Assignments (Moodle >= 2.3)';
 $string['showassignments'] = 'Assignments (Moodle <= 2.2)';
 $string['showattendances'] = 'Attendance';
 $string['showcountitems'] = 'Show number of items';
-$string['showcountitems_help'] = '**Yes**
-: display a message showing the total number ungraded items that were found and the total number of activities that have ungraded items. If the are no such actvities, a message will be displayed. If there is only one such activity, then this message will not be displayed, because the link to the activity already includes the number of its ungraded items.
+$string['showcountitems_help'] = '**Yes**  
+&nbsp; display a message showing the total number ungraded items that were found and the total number of activities that have ungraded items. If the are no such actvities, a message will be displayed. If there is only one such activity, then this message will not be displayed, because the link to the activity already includes the number of its ungraded items.
 
-**No**
-: do not display a message showing how many ungraded items and activities were found. However, the number of ungraded items in each activity will still be displayed in the links to the activities.';
+**No**  
+&nbsp; do not display a message showing how many ungraded items and activities were found. However, the number of ungraded items in each activity will still be displayed in the links to the activities.';
 $string['showdatabases'] = 'Databases (with ratings)';
 $string['showforums'] = 'Forums (with ratings)';
 $string['showglossaries'] = 'Glossaries (with ratings)';
@@ -121,32 +121,32 @@ $string['showlessons'] = 'Lessons (with essay questions)';
 $string['showquizzes'] = 'Quizzes (with essay questions)';
 $string['showquizzestext'] = 'Quizzes are not being included in the list of activities.';
 $string['showtimes'] = 'Show date last modified';
-$string['showtimes_help'] = '**Yes**
-: the information about each ungraded submission will include the time of the submission
+$string['showtimes_help'] = '**Yes**  
+&nbsp; the information about each ungraded submission will include the time of the submission
 
-**No**
-: no information about the times of the ungraded submissios will be displayed';
+**No**  
+&nbsp; no information about the times of the ungraded submissios will be displayed';
 $string['showuserlist'] = 'Show lists of users';
-$string['showuserlist_help'] = '**No**
-: For each ungraded activity, this block will not display a list of users with ungraded items, but will instead simply show a link to the main grading page for the activity.
+$string['showuserlist_help'] = '**No**  
+&nbsp; For each ungraded activity, this block will not display a list of users with ungraded items, but will instead simply show a link to the main grading page for the activity.
 
-**Yes - collapsed**
-: For each ungraded activity, a list of users with ungraded submissions will be created. Initially the list will be collapsed, so the user names will not be visible, but the list can be expanded by clicking on the activity name.
+**Yes - collapsed**  
+&nbsp; For each ungraded activity, a list of users with ungraded submissions will be created. Initially the list will be collapsed, so the user names will not be visible, but the list can be expanded by clicking on the activity name.
 
-**Yes - expanded**
-: The list of users for each activity will be displayed in full and will not be collapsible.';
+**Yes - expanded**  
+&nbsp; The list of users for each activity will be displayed in full and will not be collapsible.';
 
 $string['showuserlist1'] = 'Yes - collapsed';
 $string['showuserlist2'] = 'Yes - expanded';
 $string['showusertype'] = 'Users to show in lists';
-$string['showusertype_help'] = '**All users**
-: The user list for each activity can potentially include any users who have ever submitted anything for the activity.
+$string['showusertype_help'] = '**All users**  
+&nbsp; The user list for each activity can potentially include any users who have ever submitted anything for the activity.
 
-**All participants in this course**
-: Only users who currently have a role in the course can appear in the lists of users. This includes current administrators, teachers and students, but excludes guests and ex-students.
+**All participants in this course**  
+&nbsp; Only users who currently have a role in the course can appear in the lists of users. This includes current administrators, teachers and students, but excludes guests and ex-students.
 
-**Students enrolled in this course**
-: Only users who are currently enrolled as students in the course can appear in the lists of users. Administrators, teachers, ex-students and guests will not appear in the user lists.';
+**Students enrolled in this course**  
+&nbsp; Only users who are currently enrolled as students in the course can appear in the lists of users. Administrators, teachers, ex-students and guests will not appear in the user lists.';
 
 $string['showusertype0'] = 'All users';
 $string['showusertype1'] = 'All participants in this course';
