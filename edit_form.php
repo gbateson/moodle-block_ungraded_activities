@@ -48,6 +48,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
      * @return void, but will update $mform
      */
     protected function specific_definition($mform) {
+        global $PAGE;
 
         $this->set_form_id($mform, get_class($this));
 
@@ -173,10 +174,10 @@ class block_ungraded_activities_edit_form extends block_edit_form {
                 $mform->setType($config_name, PARAM_INT);
                 $mform->setDefault($config_name, $this->defaultvalue($name));
                 $mform->addHelpButton($config_name, $name, $plugin);
-
-                $this->add_importexport($mform, $plugin);
+                //$this->add_importexport($mform, $plugin);
             }
         }
+        $PAGE->requires->js_call_amd('block_ungraded_activities/form', 'init');
     }
 
     /**

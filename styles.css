@@ -29,6 +29,10 @@
  * styles for block settings edit form
  */
 
+#block_ungraded_activities_edit_form {
+    max-width: 1000px;
+}
+
 #block_ungraded_activities_edit_form div.fitem {
     margin-bottom: 0px;
     margin-top: 0px;
@@ -45,13 +49,6 @@
 	margin-bottom: 1px;
 	margin-top: 5px;
     width: auto;
-}
-
-#block_ungraded_activities_edit_form div.fitem div.itemselect {
-    background-color: pink;
-    float: right;
-    text-align: center;
-    width: 72px;
 }
 
 #block_ungraded_activities_edit_form div.dateformat {

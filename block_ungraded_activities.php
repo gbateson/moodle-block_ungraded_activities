@@ -1294,30 +1294,46 @@ class block_ungraded_activities extends block_base {
      * @return string
      */
      static public function get_userfields($tableprefix='', array $extrafields=null, $idalias='id', $fieldprefix='') {
+
+        if (class_exists('\core_user\fields')) {
+            // Moodle >= 3.11
+            $fields = \core_user\fields::for_userpic();
+            if ($extrafields) {
+                // The splat operator, "...", was introduced in PHP 5.6
+                // so this should be valid syntax for recent Moodles.
+                $fields->including(...$extrafields);
+            }
+            $selects = $fields->get_sql($tableprefix, false, $fieldprefix, $idalias, false)->selects;
+            if ($tableprefix === '') {
+                $selects = str_replace('{user}.', '', $selects);
+            }
+            return str_replace(', ', ',', $selects);
+        }
+
         if (class_exists('user_picture')) {
             // Moodle >= 2.6
             return user_picture::fields($tableprefix, $extrafields, $idalias, $fieldprefix);
-        } else {
-            // Moodle <= 2.5
-            $fields = array('id', 'firstname', 'lastname', 'picture', 'imagealt', 'email');
-            if ($tableprefix || $extrafields || $idalias) {
-                if ($tableprefix) {
-                    $tableprefix .= '.';
-                }
-                if ($extrafields) {
-                    $fields = array_unique(array_merge($fields, $extrafields));
-                }
-                if ($idalias) {
-                    $idalias = " AS $idalias";
-                }
-                if ($fieldprefix) {
-                    $fieldprefix = " AS $fieldprefix";
-                }
-                foreach ($fields as $i => $field) {
-                    $fields[$i] = "$tableprefix$field".($field=='id' ? $idalias : ($fieldprefix=='' ? '' : "$fieldprefix$field"));
-                }
-            }
-            return implode(',', $fields); // 'u.id AS userid, u.username, u.firstname, u.lastname, u.picture, u.imagealt, u.email';
         }
+
+        // Moodle <= 2.5
+        $fields = array('id', 'firstname', 'lastname', 'picture', 'imagealt', 'email');
+        if ($tableprefix || $extrafields || $idalias) {
+            if ($tableprefix) {
+                $tableprefix .= '.';
+            }
+            if ($extrafields) {
+                $fields = array_unique(array_merge($fields, $extrafields));
+            }
+            if ($idalias) {
+                $idalias = " AS $idalias";
+            }
+            if ($fieldprefix) {
+                $fieldprefix = " AS $fieldprefix";
+            }
+            foreach ($fields as $i => $field) {
+                $fields[$i] = "$tableprefix$field".($field=='id' ? $idalias : ($fieldprefix=='' ? '' : "$fieldprefix$field"));
+            }
+        }
+        return implode(',', $fields); // 'u.id AS userid, u.username, u.firstname, u.lastname, u.picture, u.imagealt, u.email';
     }
 }
