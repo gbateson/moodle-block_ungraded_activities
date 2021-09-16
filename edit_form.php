@@ -304,21 +304,19 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $label = get_string($name);
         $text = get_string('block'.$name, $plugin);
 
-        $params = array('id' => $this->block->instance->id);
+        $export = get_string('exportsettings', $plugin);
+        $params = array('id' => $this->block->instance->id); // URL params
         $params = array('href' => new moodle_url('/blocks/ungraded_activities/export.php', $params));
+        $export = html_writer::tag('a', $export, $params).' '.$OUTPUT->help_icon('exportsettings', $plugin);
+        $export = html_writer::tag('div', $export, array('class' => 'exportsettings'));
 
-        $text .= html_writer::empty_tag('br');
-        $text .= html_writer::tag('a', get_string('exportsettings', $plugin), $params);
-        $text .= ' '.$OUTPUT->help_icon('exportsettings', $plugin);
-
-        $params = array('id' => $this->block->instance->id);
+        $import = get_string('importsettings', $plugin);
+        $params = array('id' => $this->block->instance->id); // URL params
         $params = array('href' => new moodle_url('/blocks/ungraded_activities/import.php', $params));
+        $import = html_writer::tag('a', $import, $params).' '.$OUTPUT->help_icon('importsettings', $plugin);
+        $import = html_writer::tag('div', $import, array('class' => 'importsettings'));
 
-        $text .= html_writer::empty_tag('br');
-        $text .= html_writer::tag('a', get_string('importsettings', $plugin), $params);
-        $text .= ' '.$OUTPUT->help_icon('importsettings', $plugin);
-
-        $mform->addElement('static', $name, $label, $text);
+        $mform->addElement('static', $name, $label, $text.$export.$import);
     }
 
     /**
@@ -342,20 +340,65 @@ class block_ungraded_activities_edit_form extends block_edit_form {
             $mform->addElement('static', $name, $label, get_string('noactivities', $plugin));
             $mform->addHelpButton($name, $name, $plugin);
         } else {
+
+            $params = array('style' => 'width: 100%; height: 4px;');
+            $linebreak = html_writer::tag('div', '', $params);
+            $spacer = ' &nbsp; ';
+
             $elements = array();
             foreach ($this->modnames as $modname => $text) {
-                $elements[] = $mform->createElement('checkbox', $config_name.'['.$modname.']', '', $text);
+                if (count($elements)) {
+                    $elements[] = $mform->createElement('static', '', '', $linebreak);
+                }
+                $checkbox_name = $config_name.'['.$modname.']';
+                $elements[] = $mform->createElement('checkbox', $checkbox_name, '', $text);
+                switch ($modname) {
+                    case 'assign':
+                        $select_name = 'config_excludeemptysubmissions';
+                        $options = array(0 => get_string('includeemptysubmissions', $plugin),
+                                         1 => get_string('excludeemptysubmissions', $plugin));
+                        break;
+
+                    case 'quiz':
+                        $select_name = 'config_excludezerogradequestions';
+                        $options = array(0 => get_string('includezerogradequestions', $plugin),
+                                         1 => get_string('excludezerogradequestions', $plugin));
+                        break;
+
+                    default:
+                        $select_name = '';
+                        $options = array();
+                }
+                if ($select_name) {
+                    $elements[] = $mform->createElement('static', '', '', $spacer);
+                    $elements[] = $mform->createElement('select', $select_name, '', $options);
+                }
             }
 
-            $mform->addGroup($elements, $elements_name, $label, html_writer::empty_tag('br'), false);
+            $mform->addGroup($elements, $elements_name, $label, '', false);
             $mform->addHelpButton($elements_name, $name, $plugin);
 
             $defaultvalue = $this->defaultvalue($name);
             $defaultvalue = explode(',', $defaultvalue);
 
             foreach ($this->modnames as $modname => $text) {
-                $mform->setType($config_name.'['.$modname.']', PARAM_INT);
-                $mform->setDefault($config_name.'['.$modname.']', in_array($modname, $defaultvalue));
+                $checkbox_name = $config_name.'['.$modname.']';
+                $mform->setType($checkbox_name, PARAM_INT);
+                $mform->setDefault($checkbox_name, in_array($modname, $defaultvalue));
+                switch ($modname) {
+                    case 'assign':
+                        $select_name = 'config_excludeemptysubmissions';
+                        break;
+                    case 'quiz':
+                        $select_name = 'config_excludezerogradequestions';
+                        break;
+                    default:
+                        $select_name = '';
+                }
+                if ($select_name) {
+                    $mform->setType($select_name, PARAM_INT);
+                    $mform->disabledIf($select_name, $checkbox_name, 'notchecked');
+                }
             }
         }
     }
@@ -372,11 +415,16 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         // get localized mod/lang names
         $this->set_langnames_and_modnames($plugin);
 
+        // Most themes use flex layout, so the only way to force a newline
+        // is to insert a DIV that is fullwidth and minimal height.
+        $params = array('style' => 'width: 100%; height: 4px;');
+        $linebreak = html_writer::tag('div', '', $params);
+
         // cache some useful strings and textbox params
         $total = html_writer::tag('small', get_string('total', $plugin).': ');
         $head  = html_writer::tag('small', get_string('head',  $plugin).': ');
         $tail  = html_writer::tag('small', get_string('tail',  $plugin).': ');
-        $params = array('size' => 2);
+        $params = array('size' => 2); // text box size
 
         $elements = array();
         foreach ($this->langnames as $lang => $text) {
@@ -388,7 +436,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
 
             // add line break (except before the first language, the default, which has $lang=='')
             if ($lang) {
-                $elements[] = $mform->createElement('static', '', '', html_writer::empty_tag('br'));
+                $elements[] = $mform->createElement('static', '', '', $linebreak);
             }
 
             // add length fields for this language

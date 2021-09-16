@@ -64,6 +64,8 @@ $string['customdatefmt_help'] = 'Any string specified here will be used to forma
 
 The format codes are those used by the PHP &quot;strftime&quot; function. More information about these codes is available via the &quot;Help&quot; link next to the textbox for this setting.';
 $string['fixdaymonth'] = 'Remove leading zeros in dates';
+$string['excludeemptysubmissions'] = 'Exclude empty submissions';
+$string['excludezerogradequestions'] = 'Exclude zero-grade questions';
 $string['exportsettings'] = 'Export settings';
 $string['exportsettings_help'] = 'This link allows you export the configuration settings for this block to a file that you can import into a similar block in another course.';
 $string['fixdaymonth_help'] = '**Yes**  
@@ -75,6 +77,8 @@ $string['forexample'] = 'e.g.';
 $string['head'] = 'Head';
 $string['importsettings'] = 'Import settings';
 $string['importsettings_help'] = 'This link takes you to a screen where you can import configuration settings from a configuration settings file exported from the same type of block in another course.';
+$string['includeemptysubmissions'] = 'Include empty submissions';
+$string['includezerogradequestions'] = 'Include zero-grade questions';
 $string['invalidblockname'] = 'Invalid block name in block instance record: id={$a->id}, blockname={$a->blockname}';
 $string['invalidcontextid'] = 'Invalid parentcontextid in block instance record: id = {$a->id}, parentcontextid = {$a->parentcontextid}';
 $string['invalidcourseid'] = 'Invalid instanceid in course context record: id={$a->id}, instanceid={$a->instanceid}';
@@ -117,8 +121,8 @@ $string['showcountitems_help'] = '**Yes**
 $string['showdatabases'] = 'Databases (with ratings)';
 $string['showforums'] = 'Forums (with ratings)';
 $string['showglossaries'] = 'Glossaries (with ratings)';
-$string['showlessons'] = 'Lessons (with essay questions)';
-$string['showquizzes'] = 'Quizzes (with essay questions)';
+$string['showlessons'] = 'Lessons (with Essay questions)';
+$string['showquizzes'] = 'Quizzes (with Essay questions)';
 $string['showquizzestext'] = 'Quizzes are not being included in the list of activities.';
 $string['showtimes'] = 'Show date last modified';
 $string['showtimes_help'] = '**Yes**  

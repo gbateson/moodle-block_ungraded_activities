@@ -51,22 +51,6 @@ define(["core/str"], function(STR) {
             JS.str.exportsettings = s[i++];
             JS.str.importsettings = s[i++];
 
-            var fieldset = document.querySelector("#id_activities");
-            if (fieldset) {
-                fieldset.querySelectorAll("[id$=showactivities] select").forEach(function(elm){
-                    var x = elm;
-                    while (x && ! x.matches(".fitem")) {
-                        x = x.parentNode;
-                    }
-                    while (x && ! x.matches("div:empty")) {
-                        x = x.previousElementSibling;
-                    }
-                    if (x) {
-                        x.style.width = "4px";
-                    }
-                });
-            }
-
             var elm = document.querySelector("select[name^=config_mycourses]");
             if (elm) {
                 var fieldsets = "#id_title, #id_activities, #id_users, #id_date, #id_applyselectedvalues";

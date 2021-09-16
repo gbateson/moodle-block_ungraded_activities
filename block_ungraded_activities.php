@@ -102,6 +102,8 @@ class block_ungraded_activities extends block_base {
             'checkoverrides'  => 0, // 0=no, 1=ignore if overridden, 2=ignore if overridden after submission
             'moodledatefmt'   => 'strftimerecent', // 11 Nov, 10:12
             'customdatefmt'   => '%Y %b %d (%a) %H:%M', // 2011 Nov 11 (Fri) 10:12
+            'excludeemptysubmissions' => 0,
+            'excludezerogradequestions' => 0,
         );
 
         if (empty($this->config)) {
@@ -166,6 +168,11 @@ class block_ungraded_activities extends block_base {
                 continue;
             }
             switch ($name) {
+                case 'showactivities':
+                    $selected[] = $name;
+                    $selected[] = 'excludeemptysubmissions';
+                    $selected[] = 'excludezerogradequestions';
+                    break;
                 case 'textlength':
                     $langs = get_string_manager()->get_list_of_translations();
                     $langs = array_keys($langs);
@@ -182,7 +189,7 @@ class block_ungraded_activities extends block_base {
         }
 
         // copy selected values to block instance in another course
-        if (isset($config->mycourses) && is_array($config->mycourses)) {
+        if (isset($config->mycourses) && is_array($config->mycourses) && count($config->mycourses)) {
             $contextids = implode(',', $config->mycourses);
 
             // get Activity List block instances in selected courses
@@ -558,7 +565,7 @@ class block_ungraded_activities extends block_base {
                         $this->content->text .= '<a href="'.$href.'" title="'.$linktitle.'" onclick="'."this.target='_blank'".'">'.$userfullname.'</a>';
 
                         $grade = sprintf($gradeformat, $item->grade);
-                        $maxgrade = $item->maxgrade;
+                        $maxgrade = sprintf($gradeformat, $item->maxgrade);
 
                         if ($grade===null || $grade==='' || $grade < 0) {
                             // use "new" icon to indicate no previous grade
@@ -741,7 +748,7 @@ class block_ungraded_activities extends block_base {
         $from   = '';
         $where  = '';
 
-        $groupid = groups_get_course_group($COURSE->id, true);
+        $groupid = groups_get_course_group($COURSE, true);
         $groupid = optional_param('groupid', $groupid, PARAM_INT);
 
         // get groupmode: 0=NOGROUPS, 1=VISIBLEGROUPS, 2=SEPARATEGROUPS
@@ -827,12 +834,21 @@ class block_ungraded_activities extends block_base {
                 $from   = '{assign} a1'.
                           ' JOIN {assign_submission} s1 ON (a1.id = s1.assignment)'.
                           ' LEFT JOIN {assign_grades} g1 ON (a1.id = g1.assignment AND '.
-                                                       's1.userid = g1.userid AND '.
-                                                       's1.attemptnumber = g1.attemptnumber)'.
+                                                            's1.userid = g1.userid AND '.
+                                                            's1.attemptnumber = g1.attemptnumber)'.
                           ' JOIN {user} u ON (s1.userid = u.id)';
                 $where  = "a1.id IN ($ids)".
                           ' AND s1.latest = 1'.
                           ' AND (g1.id IS NULL OR g1.timemodified < s1.timemodified)';
+                if ($this->config->excludeemptysubmissions) {
+                    // check for submissions with either a file or some text
+                    //$from .= ' LEFT JOIN {assignsubmission_file} asf1 ON (s1.id = asf1.submission)';
+                    //$from .= ' LEFT JOIN {assignsubmission_onlinetext} asot1 ON (s1.id = asot1.submission)';
+                    //$where .= ' AND (asf1.id IS NOT NULL AND asf1.numfiles > 0)';
+                    //$where .= ' AND (asot1.id IS NOT NULL AND asot1.onlinetext != "")';
+                    $where .= ' AND s1.status = "submitted"'; // ASSIGN_SUBMISSION_STATUS_SUBMITTED
+                    $where .= ' AND (g1.grade IS NULL OR g1.grade < 0)';
+                }
                 break;
 
             case 'assignment':
@@ -1035,7 +1051,8 @@ class block_ungraded_activities extends block_base {
                           ' AND qa.timefinish > 0 AND qa.preview = 0'.
                           " AND qnas.sequencenumber = ($latest_question_attempt_step)".
                           " AND qnas.fraction IS NULL".
-                          " AND $qn_qtype"; // qn.type = 'essay' (OR qn.type = 'random')
+                          (empty($this->config->excludezerogradequestions) ? '' : ' AND qna.maxmark > 0').
+                          " AND $qn_qtype"; // qn.type = 'essay' (OR qn.type = 'random')                
                 break;
 
             case 'workshop':
@@ -1295,8 +1312,8 @@ class block_ungraded_activities extends block_base {
      */
      static public function get_userfields($tableprefix='', array $extrafields=null, $idalias='id', $fieldprefix='') {
 
+        // Moodle >= 3.11
         if (class_exists('\core_user\fields')) {
-            // Moodle >= 3.11
             $fields = \core_user\fields::for_userpic();
             if ($extrafields) {
                 // The splat operator, "...", was introduced in PHP 5.6
@@ -1310,8 +1327,8 @@ class block_ungraded_activities extends block_base {
             return str_replace(', ', ',', $selects);
         }
 
+        // Moodle >= 2.6
         if (class_exists('user_picture')) {
-            // Moodle >= 2.6
             return user_picture::fields($tableprefix, $extrafields, $idalias, $fieldprefix);
         }
 
