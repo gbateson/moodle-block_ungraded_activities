@@ -174,10 +174,10 @@ class block_ungraded_activities_edit_form extends block_edit_form {
                 $mform->setType($config_name, PARAM_INT);
                 $mform->setDefault($config_name, $this->defaultvalue($name));
                 $mform->addHelpButton($config_name, $name, $plugin);
-                //$this->add_importexport($mform, $plugin);
+
+                $PAGE->requires->js_call_amd('block_ungraded_activities/form', 'init');
             }
         }
-        $PAGE->requires->js_call_amd('block_ungraded_activities/form', 'init');
     }
 
     /**
@@ -341,14 +341,10 @@ class block_ungraded_activities_edit_form extends block_edit_form {
             $mform->addHelpButton($name, $name, $plugin);
         } else {
 
-            $params = array('style' => 'width: 100%; height: 4px;');
-            $linebreak = html_writer::tag('div', '', $params);
-            $spacer = ' &nbsp; ';
-
             $elements = array();
             foreach ($this->modnames as $modname => $text) {
                 if (count($elements)) {
-                    $elements[] = $mform->createElement('static', '', '', $linebreak);
+                    $elements[] = $this->create_linebreak($mform);
                 }
                 $checkbox_name = $config_name.'['.$modname.']';
                 $elements[] = $mform->createElement('checkbox', $checkbox_name, '', $text);
@@ -370,7 +366,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
                         $options = array();
                 }
                 if ($select_name) {
-                    $elements[] = $mform->createElement('static', '', '', $spacer);
+                    $elements[] = $this->create_spacer($mform);
                     $elements[] = $mform->createElement('select', $select_name, '', $options);
                 }
             }
@@ -415,11 +411,6 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         // get localized mod/lang names
         $this->set_langnames_and_modnames($plugin);
 
-        // Most themes use flex layout, so the only way to force a newline
-        // is to insert a DIV that is fullwidth and minimal height.
-        $params = array('style' => 'width: 100%; height: 4px;');
-        $linebreak = html_writer::tag('div', '', $params);
-
         // cache some useful strings and textbox params
         $total = html_writer::tag('small', get_string('total', $plugin).': ');
         $head  = html_writer::tag('small', get_string('head',  $plugin).': ');
@@ -434,9 +425,8 @@ class block_ungraded_activities_edit_form extends block_edit_form {
             $headlength = 'config_headlength'.$lang;
             $taillength = 'config_taillength'.$lang;
 
-            // add line break (except before the first language, the default, which has $lang=='')
-            if ($lang) {
-                $elements[] = $mform->createElement('static', '', '', $linebreak);
+            if (count($elements)) {
+                $elements[] = $this->create_linebreak($mform);
             }
 
             // add length fields for this language
@@ -629,130 +619,15 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         }
     }
 
-    /**
-     * add_importexport
-     *
-     * @param object  $mform
-     * @param string  $plugin
-     * @return void, but will update $mform
-     */
-    protected function add_importexport($mform, $plugin) {
-        global $OUTPUT;
+    protected function create_linebreak($mform) {
+        // Most themes use flex layout, so the only way to force a newline
+        // is to insert a DIV that is fullwidth and minimal height.
+        $params = array('style' => 'width: 100%; height: 4px;');
+        $linebreak = html_writer::tag('div', '', $params);
+        return $mform->createElement('static', '', '', $linebreak);
+    }
 
-        $exportlink = new moodle_url('/blocks/ungraded_activities/export.php', array('id' => $this->block->instance->id));
-        $importlink = new moodle_url('/blocks/ungraded_activities/import.php', array('id' => $this->block->instance->id));
-
-        $str = (object)array(
-            'all'        => addslashes_js(get_string('all')),
-            'apply'      => addslashes_js(get_string('apply', $plugin)),
-            'export'     => addslashes_js(get_string('exportsettings', $plugin)),
-            'exporthelp' => addslashes_js($OUTPUT->help_icon('exportsettings', $plugin)),
-            'exportlink' => addslashes_js($exportlink),
-            'import'     => addslashes_js(get_string('importsettings', $plugin)),
-            'importhelp' => addslashes_js($OUTPUT->help_icon('importsettings', $plugin)),
-            'importlink' => addslashes_js($importlink),
-            'none'       => addslashes_js(get_string('none')),
-            'select'     => addslashes_js(get_string('selectallnone', $plugin)),
-            'selecthelp' => addslashes_js($OUTPUT->help_icon('selectallnone', $plugin))
-        );
-
-        $js = '';
-        $js .= '<script type="text/javascript">'."\n";
-        $js .= "//<![CDATA[\n";
-        $js .= "function add_importexport() {\n";
-        $js .= "    var obj = document.getElementsByTagName('DIV');\n";
-        $js .= "    if (obj) {\n";
-        $js .= "        var fbuttons = new RegExp('\\\\bfitem_actionbuttons\\\\b');\n";
-        $js .= "        var fcontainer = new RegExp('\\\\bfcontainer\\\\b');\n";
-        $js .= "        var fempty = new RegExp('\\\\bfemptylabel\\\\b');\n";
-        $js .= "        var fitem = new RegExp('\\\\bfitem\\\\b');\n";
-        $js .= "        var fid = new RegExp('^f[a-z]+_id_(elements_)?(config_)?(.*)');\n";
-        $js .= "        var i_max = obj.length;\n";
-        $js .= "        var addSelect = true;\n";
-        $js .= "        for (var i=0; i<i_max; i++) {\n";
-        $js .= "            if (obj[i].className.match(fbuttons)) {\n";
-        $js .= "                continue;\n";
-        $js .= "            }\n";
-        $js .= "            if (obj[i].className.match(fempty)) {\n";
-        $js .= "                continue;\n";
-        $js .= "            }\n";
-        $js .= "            if (obj[i].className.match(fitem)) {\n";
-
-        $js .= "                if (addSelect && obj[i].id=='') {\n";
-        $js .= "                    addSelect = false;\n";
-
-        $js .= "                    var elm = document.createElement('SPAN');\n";
-        $js .= "                    elm.style.margin = '6px auto';\n";
-
-/**
-        $js .= "                    var lnk = document.createElement('A');\n";
-        $js .= "                    lnk.appendChild(document.createTextNode('$str->import'));\n";
-        $js .= "                    lnk.href = '$str->importlink';\n";
-        $js .= "                    elm.appendChild(lnk);\n";
-        $js .= "                    elm.innerHTML += '$str->importhelp';\n";
-        $js .= "                    elm.appendChild(document.createElement('BR'));\n";
-
-        $js .= "                    var lnk = document.createElement('A');\n";
-        $js .= "                    lnk.appendChild(document.createTextNode('$str->export'));\n";
-        $js .= "                    lnk.href = '$str->exportlink';\n";
-        $js .= "                    elm.appendChild(lnk);\n";
-        $js .= "                    elm.innerHTML += '$str->exporthelp';\n";
-**/
-
-        $js .= "                    var elm = document.createElement('SPAN');\n";
-        $js .= "                    elm.style.margin = '6px auto';\n";
-
-        $js .= "                    elm.appendChild(document.createTextNode('$str->select'));\n";
-        $js .= "                    elm.innerHTML += '$str->selecthelp';\n";
-        $js .= "                    elm.appendChild(document.createElement('BR'));\n";
-
-        $js .= "                    var lnk = document.createElement('A');\n";
-        $js .= "                    lnk.appendChild(document.createTextNode('$str->all'));\n";
-        $js .= "                    lnk.href = \"javascript:select_all_in('DIV','itemselect',null);\";\n";
-        $js .= "                    elm.appendChild(lnk);\n";
-
-        $js .= "                    elm.appendChild(document.createTextNode(' / '));\n";
-
-        $js .= "                    var lnk = document.createElement('A');\n";
-        $js .= "                    lnk.appendChild(document.createTextNode('$str->none'));\n";
-        $js .= "                    lnk.href = \"javascript:deselect_all_in('DIV','itemselect',null);\";\n";
-        $js .= "                    elm.appendChild(lnk);\n";
-
-        $js .= "                } else {\n";
-        $js .= "                    var elm = document.createElement('INPUT');\n";
-        $js .= "                    elm.style.margin = '6px auto';\n";
-
-        $js .= "                    if (obj[i].id=='fitem_id_config_mycourses') {\n";
-        $js .= "                        elm.type = 'submit';\n";
-        $js .= "                        elm.value = '$str->apply';\n";
-        $js .= "                    } else {\n";
-        $js .= "                        elm.type = 'checkbox';\n";
-        $js .= "                        elm.value = 1;\n";
-        $js .= "                        elm.name = 'select_' + obj[i].id.replace(fid, '\$3');\n";
-        $js .= "                        elm.id = 'id_select_' + obj[i].id.replace(fid, '\$3');\n";
-        $js .= "                    }\n";
-        $js .= "                }\n";
-
-        $js .= "                var div = document.createElement('DIV');\n";
-        $js .= "                div.appendChild(elm);\n";
-        $js .= "                div.className = 'itemselect';\n";
-        $js .= "                div.style.marginRight = (obj[i].offsetWidth - 720) + 'px';\n";
-
-        $js .= "                obj[i].insertBefore(div, obj[i].firstChild);\n";
-        $js .= "                div.style.height = obj[i].offsetHeight + 'px';\n";
-        $js .= "            }\n";
-        $js .= "        }\n";
-        $js .= "    }\n";
-        $js .= "}\n";
-        $js .= "if (window.addEventListener) {\n";
-        $js .= "    window.addEventListener('load', add_importexport, false);\n";
-        $js .= "} else if (window.attachEvent) {\n";
-        $js .= "    window.attachEvent('onload', add_importexport);\n";
-        $js .= "} else {\n";
-        $js .= "    window.onload = add_importexport;\n";
-        $js .= "}\n";
-        $js .= "//]]>\n";
-        $js .= "</script>\n";
-        $mform->addElement('static', '', '', $js);
+    protected function create_spacer($mform) {
+        return $mform->createElement('static', '', '', ' &nbsp; ');
     }
 }
