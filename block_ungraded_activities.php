@@ -374,19 +374,23 @@ class block_ungraded_activities extends block_base {
         }
 
         // (re)start the content text
-        $this->content->text = '';;
+        $this->content->text = '';
 
         // add message about number of item and activities
 
         if ($this->config->showcountitems) {
+            $text = array();
             if ($count_activities > 1) {
                 $name = ($count_items==1 ? 'ungradeditem' : 'ungradeditems');
                 $str  = get_string($name, $plugin, $count_items);
-                $this->content->text .= '<p class="ungradeditems">'.$str.'</p>';
+                $text[] = html_writer::tag('b', $str, array('class' => "$name"));
 
                 $name = ($count_activities==1 ? 'ungradedactivity' : 'ungradedactivities');
                 $str  = get_string($name, $plugin, $count_activities);
-                $this->content->text .= '<p class="ungradedactivities">'.$str.'</p>';
+                $text[] = html_writer::tag('small', $str, array('class' => $name));
+            }
+            if ($text = implode(' ', $text)) {
+                $this->content->text = html_writer::tag('p', $text, array('class' => 'my-1'));
             }
         }
 
@@ -498,7 +502,7 @@ class block_ungraded_activities extends block_base {
                 $this->content->text .= '</div>';
 
                 if ($this->config->showuserlist) {
-                    $this->content->text .= '<ul class="ungradeditems" id="'.$itemsID.'"'.$itemsCSS.'>';
+                    $this->content->text .= '<ul class="list-unstyled ungradeditems" id="'.$itemsID.'"'.$itemsCSS.'>';
 
                     // display details about each ungraded item
                     foreach ($activity->items as $item) {
