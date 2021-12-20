@@ -108,7 +108,7 @@ Note that you can only copy the settings to courses in which you are a teacher (
 
 To copy these settings to blocks in other Moodle sites, use the "export" function on this page, and the "import" function of the block on the destination site.';
 $string['showactivities'] = 'Show activities';
-$string['showactivities_help'] = 'The checkboxes here allow you to select the type of activities that you wish to be included in the list of items that have not yet been graded or approved.';
+$string['showactivities_help'] = 'The checkboxes here allow you to select the type of activities that you wish to be included in the list of items that have not yet been graded, rated or approved.';
 $string['showassigns'] = 'Assignments (Moodle >= 2.3)';
 $string['showassignments'] = 'Assignments (Moodle <= 2.2)';
 $string['showattendances'] = 'Attendance';

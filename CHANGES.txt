@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2021-12-20 (27)
+ - fix detection of unrated or newly-modified database records; replace print_user_picture() with $USER->user_picture
+
 2021-09-21 (26)
  - optimize code to add checkboxes that allow settings to be copied to similar blocks in other courses
 

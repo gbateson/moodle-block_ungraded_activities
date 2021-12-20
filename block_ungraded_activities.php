@@ -237,7 +237,7 @@ class block_ungraded_activities extends block_base {
      * @return xxx
      */
     function get_content() {
-        global $CFG, $COURSE, $DB, $PAGE, $USER;
+        global $CFG, $COURSE, $DB, $OUTPUT, $PAGE, $USER;
 
         if ($this->content !== null) {
             return $this->content;
@@ -505,7 +505,7 @@ class block_ungraded_activities extends block_base {
 
                         $this->content->text .= '<li class="ungradeditem">';
 
-                        // user object  - for print_user_picture() and fullname()
+                        // user object  - for user_picture() and fullname()
                         $user = new stdClass();
                         $fields = explode(',', self::get_userfields());
                         foreach ($fields as $field) {
@@ -517,7 +517,7 @@ class block_ungraded_activities extends block_base {
                         }
 
                         if ($this->config->adduserlinks && $user->id) {
-                            $this->content->text .= print_user_picture($item, $COURSE->id, null, 24, true, true, true);
+                            $this->content->text .= $OUTPUT->user_picture($user, array('courseid' => $COURSE->id, 'size' => 24, 'popup' => true));
                         }
 
                         // link to this item's grading/approval page
@@ -907,7 +907,14 @@ class block_ungraded_activities extends block_base {
                           ' JOIN {user} u ON (dr.userid = u.id)'.
                           ' LEFT JOIN {rating} rt ON (dr.id = rt.itemid AND ctx.id = rt.contextid)';
                 $where  = "d.id IN ($ids)".
-                          ' AND ((d.approval = 1 AND dr.approved = 0) OR (d.assessed = 1 AND rt.rating IS NULL))';
+                          ' AND (('.
+                              'd.approval = 1 AND dr.approved = 0'.
+                          ') OR ('.
+                              'd.assessed > 0'.
+                              ' AND (d.assesstimestart = 0 OR d.assesstimestart <= dr.timemodified)'.
+                              ' AND (d.assesstimefinish = 0 OR d.assesstimefinish >= dr.timemodified)'.
+                              ' AND (rt.rating IS NULL OR rt.timemodified < dr.timemodified)'
+                          .'))';
                 break;
 
             case 'forum':
@@ -931,7 +938,7 @@ class block_ungraded_activities extends block_base {
                           ' AND f.assessed > 0'.
                           ' AND (f.assesstimestart = 0 OR f.assesstimestart <= fp.modified)'.
                           ' AND (f.assesstimefinish = 0 OR f.assesstimefinish >= fp.modified)'.
-                          ' AND rt.rating IS NULL';
+                          ' AND (rt.rating IS NULL OR rt.timemodified < fp.modified)';
                 break;
 
             case 'glossary':
@@ -958,7 +965,7 @@ class block_ungraded_activities extends block_base {
                               'g.assessed > 0'.
                               ' AND (g.assesstimestart = 0 OR g.assesstimestart <= ge.timemodified)'.
                               ' AND (g.assesstimefinish = 0 OR g.assesstimefinish >= ge.timemodified)'.
-                              ' AND rt.rating IS NULL'. // i.e. glossary entry has not been rated yet
+                              ' AND (rt.rating IS NULL OR rt.timemodified < ge.timemodified)'.
                           '))';
                 break;
 

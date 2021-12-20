@@ -249,7 +249,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
                         case 'assign'     : $modname = get_string('showassigns',     $plugin); break;
                         case 'assignment' : $modname = get_string('showassignments', $plugin); break;
                         case 'attendance' : $modname = get_string('showattendances', $plugin); break;
-                        case 'database'   : $modname = get_string('showdatabases',   $plugin); break;
+                        case 'data'       : $modname = get_string('showdatabases',   $plugin); break;
                         case 'forum'      : $modname = get_string('showforums',      $plugin); break;
                         case 'glossary'   : $modname = get_string('showglossaries',  $plugin); break;
                         case 'lesson'     : $modname = get_string('showlessons',     $plugin); break;
