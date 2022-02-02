@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2022-02-02 (29)
+ - modify Bootstrap classes so that item select boxes are also shown on small screens
+
 2021-12-20 (28)
  - optimize display of message displaying number of items and activities
 
