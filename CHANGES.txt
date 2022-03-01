@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2022-03-01 (30)
+ - add zebra stripes to the settings page if 'itemslect' checkboxes are used
+
 2022-02-02 (29)
  - modify Bootstrap classes so that item select boxes are also shown on small screens
 
