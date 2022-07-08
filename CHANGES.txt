@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2022-07-08 (32)
+ - temporary fix for bug on Moodle >= 4.x caused by new structure of quiz_slots table
+
 2022-03-02 (31)
  - add zerbra stripes on settings regardlesss of whether not the 'mycourses' element is present
 

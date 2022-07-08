@@ -810,6 +810,7 @@ class block_ungraded_activities extends block_base {
     function add_query(&$query, $mods, $modname, $select_users, $from_users, $where_users) {
         global $CFG, $COURSE, $DB, $USER;
 
+
         $name = 'showactivities';
         if (! $this->config->$name) {
             return; // shouldn't happen !!
@@ -823,6 +824,10 @@ class block_ungraded_activities extends block_base {
         if (! $ids = implode(',', array_keys($mods[$modname]->instances))) {
             return; // no activities of required type in this course
         }
+
+        $select = '';
+        $from = '';
+        $where = '';
 
         switch ($modname) {
 
@@ -996,6 +1001,7 @@ class block_ungraded_activities extends block_base {
                 break;
 
             case 'quiz':
+
                 // get the proper "selectmanual" config setting
                 // Site administration -> Miscellaneous -> Experimental
                 $this->qtype_random_selectmanual = get_config('qtype_random', 'selectmanual');
@@ -1046,24 +1052,31 @@ class block_ungraded_activities extends block_base {
                 $timemodified = 'qa.timemodified';
                 $instanceid = 'q.id';
                 $mainid = $DB->sql_concat("'question_attempt_steps_'", 'qnas.id');
-                $select = "$mainid AS mainid,".
-                          " qa.uniqueid AS id, $timemodified AS timemodified,".
-                          ' qnas.fraction AS grade, qs.maxmark AS maxgrade,'.
-                          " '$modname' AS modname, $instanceid AS instanceid,".
-                          " $extrainfo AS extrainfo"; // '' OR real question id in random questions
-                $from   = '{quiz} q'.
-                          ' JOIN {quiz_attempts} qa ON (q.id = qa.quiz)'.
-                          ' JOIN {user} u ON (u.id = qa.userid)'.
-                          ' JOIN {question_attempts} qna ON (qna.questionusageid = qa.uniqueid)'.
-                          ' JOIN {question_attempt_steps} qnas ON (qnas.questionattemptid = qna.id)'.
-                          ' JOIN {question} qn ON (qn.id = qna.questionid)'.
-                          ' JOIN {quiz_slots} qs ON (qs.questionid = qn.id AND qs.quizid = q.id)';
-                $where  = 'q.id IN ('.$ids.')'.
-                          ' AND qa.timefinish > 0 AND qa.preview = 0'.
-                          " AND qnas.sequencenumber = ($latest_question_attempt_step)".
-                          " AND qnas.fraction IS NULL".
-                          (empty($this->config->excludezerogradequestions) ? '' : ' AND qna.maxmark > 0').
-                          " AND $qn_qtype"; // qn.type = 'essay' (OR qn.type = 'random')                
+
+                $dbman = $DB->get_manager();
+                if ($dbman->table_exists('question_versions')) {
+                    // Moodle >= 4.0
+                } if ($dbman->table_exists('quiz_slots') && $dbman->field_exists('quiz_slots', 'questionid')) {
+                    // Moodle 2.7 - 3.11
+                    $select = "$mainid AS mainid,".
+                              " qa.uniqueid AS id, $timemodified AS timemodified,".
+                              ' qnas.fraction AS grade, qs.maxmark AS maxgrade,'.
+                              " '$modname' AS modname, $instanceid AS instanceid,".
+                              " $extrainfo AS extrainfo"; // '' OR real question id in random questions
+                    $from   = '{quiz} q'.
+                              ' JOIN {quiz_attempts} qa ON (q.id = qa.quiz)'.
+                              ' JOIN {user} u ON (u.id = qa.userid)'.
+                              ' JOIN {question_attempts} qna ON (qna.questionusageid = qa.uniqueid)'.
+                              ' JOIN {question_attempt_steps} qnas ON (qnas.questionattemptid = qna.id)'.
+                              ' JOIN {question} qn ON (qn.id = qna.questionid)'.
+                              ' JOIN {quiz_slots} qs ON (qs.questionid = qn.id AND qs.quizid = q.id)';
+                    $where  = 'q.id IN ('.$ids.')'.
+                              ' AND qa.timefinish > 0 AND qa.preview = 0'.
+                              " AND qnas.sequencenumber = ($latest_question_attempt_step)".
+                              " AND qnas.fraction IS NULL".
+                              (empty($this->config->excludezerogradequestions) ? '' : ' AND qna.maxmark > 0').
+                              " AND $qn_qtype"; // qn.type = 'essay' (OR qn.type = 'random')                
+                }
                 break;
 
             case 'workshop':
@@ -1091,12 +1104,6 @@ class block_ungraded_activities extends block_base {
                           " LEFT JOIN {workshop_assessments} wa2 ON (ws.id = wa2.submissionid AND wa2.userid <> $userid)";
                 $where  = "w.id IN ($ids) AND (($unassessed) OR ($ungraded))";
                 break;
-
-            default: // shouldn't happen !!
-                $select = '';
-                $from   = '';
-                $where  = '';
-
         } // end switch
 
         if ($select && $from && $where) {
