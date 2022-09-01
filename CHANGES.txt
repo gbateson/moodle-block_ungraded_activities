@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2022-09-01 (34)
+ - (1) add Japanese lang strings; (2) skip consideration of unrated database, forums and glossaries; (3) improve display and operation of data format strings on settings page for this block.
+
 2022-07-08 (32)
  - temporary fix for bug on Moodle >= 4.x caused by new structure of quiz_slots table
 

@@ -158,6 +158,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $mform->setType($config_name, PARAM_INT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
         $mform->addHelpButton($config_name, $name, $plugin);
+        $mform->disabledIf($config_name, 'config_showtimes', 'eq', '0');
 
         if (isset($this->block->instance)) {
             if ($mycourses = $this->get_mycourses()) {
@@ -234,7 +235,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
      * @return void, but will update $mform
      */
     protected function set_langnames_and_modnames($plugin) {
-        global $COURSE, $USER;
+        global $COURSE, $DB, $USER;
 
         if ($this->modnames===null && $this->langnames===null) {
             $this->modnames = array();
@@ -243,8 +244,17 @@ class block_ungraded_activities_edit_form extends block_edit_form {
             // pick out mod names and languages used in this course
             $modinfo = get_fast_modinfo($COURSE, $USER->id);
             foreach ($modinfo->cms as $cmid => $cm) {
-                if ($cm->modname=='label') {
-                    continue; // ignore labels
+                if ($cm->modname == 'label' || $cm->modname == 'book') {
+                    continue; // ignore labels and books
+                }
+                if ($cm->modname == 'data' || $cm->modname == 'forum' || $cm->modname == 'glossary') {
+                    $instance = $DB->get_record($cm->modname, array('id' => $cm->instance));
+                    if (empty($instance) || empty($instance->assessed)) {
+                        continue; // ignore data, forum and glossary activities that are NOT assessed
+                    }
+                }
+                if ($cm->modname == 'quiz') {
+                    // skip this quiz if it doesn't have manually graded questions
                 }
                 if (empty($this->modnames[$cm->modname])) {
                     switch ($cm->modname) {
@@ -399,7 +409,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
                 }
             }
         }
-    }
+    }                    
 
     /**
      * add_field_languages
@@ -469,15 +479,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $elements_name = 'elements_'.$name;
         $label = get_string($name, $plugin);
 
-        // cache name of method to create image URLs
-        if (method_exists($PAGE->theme, 'image_url')) {
-            $image_url = 'image_url'; // Moodle >= 3.3
-        } else {
-            $image_url = 'pix_url'; // Moodle <= 3.2
-        }
-
         $time = time();
-        $switch_plus = $PAGE->theme->$image_url('t/switch_plus', 'core')->out();
 
         $string = array();
         include($CFG->dirroot.'/lang/en/langconfig.php');
@@ -487,43 +489,17 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $elements = array();
         foreach (array_keys($options) as $i => $option) {
             $fmt = get_string($option, 'langconfig');
-            $text = userdate($time, $fmt);
-
-            $params = array('src' => $switch_plus, 'onclick' => 'toggledateformat(this, '.$i.')');
-            $text .= ' '.html_writer::empty_tag('img', $params);
-
-            $params = array('id' => 'dateformat'.$i, 'class' => 'dateformat', 'style' => 'display: none;');
-            $text .= html_writer::tag('div', $option.': '.$fmt, $params);
-
-            $elements[] = $mform->createElement('radio', $config_name, '', $text, $option);
+            $text = html_writer::tag('small', $option.': '.$fmt);
+            $date = html_writer::tag('i', userdate($time, $fmt));
+            $elements[] = $mform->createElement('radio', $config_name, '', $date.' '.$text, $option);
         }
-
         usort($elements, array($this, 'sort_by_text'));
-
-        $js = '';
-        $js .= '<script type="text/javascript">'."\n";
-        $js .= "//<![CDATA[\n";
-        $js .= "function toggledateformat(img, i) {\n";
-        $js .= "    var obj = document.getElementById('dateformat' + i);\n";
-        $js .= "    if (obj) {\n";
-        $js .= "        if (obj.style.display=='none') {\n";
-        $js .= "            obj.style.display = '';\n";
-        $js .= "            img.src = img.src.replace('plus','minus');\n";
-        $js .= "        } else {\n";
-        $js .= "            obj.style.display = 'none';\n";
-        $js .= "            img.src = img.src.replace('minus','plus');;\n";
-        $js .= "        }\n";
-        $js .= "    }\n";
-        $js .= "    return false;\n";
-        $js .= "}\n";
-        $js .= "//]]>\n";
-        $js .= "</script>\n";
-        $elements[] = $mform->createElement('static', '', '', $js);
 
         $mform->addGroup($elements, $elements_name, $label, html_writer::empty_tag('br'), false);
         $mform->addHelpButton($elements_name, $name, $plugin);
         $mform->setType($config_name, PARAM_ALPHANUM);
         $mform->setDefault($config_name, $this->defaultvalue($name));
+        $mform->disabledIf($config_name, 'config_showtimes', 'eq', '0');
     }
 
     /**
@@ -569,6 +545,7 @@ class block_ungraded_activities_edit_form extends block_edit_form {
         $mform->addHelpButton($elements_name, $name, $plugin);
         $mform->setType($config_name, PARAM_TEXT);
         $mform->setDefault($config_name, $this->defaultvalue($name));
+        $mform->disabledIf($config_name, 'config_showtimes', 'eq', '0');
     }
 
     /**

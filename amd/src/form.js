@@ -52,7 +52,17 @@ define(["core/str"], function(STR) {
 
             var fieldsets = "#id_title, #id_activities, #id_users, #id_date, #id_applyselectedvalues";
             JS.add_itemselect_checkboxes(fieldsets);
+
+            JS.setup_dateformats();
         });
+    };
+
+    JS.add_event_listener = function(obj, evt, fn, useCapture) {
+        if (obj.addEventListener) {
+            obj.addEventListener(evt, fn, (useCapture || false));
+        } else if (obj.attachEvent) {
+            obj.attachEvent("on" + evt, fn);
+        }
     };
 
     JS.add_itemselect_checkboxes = function(fieldsets){
@@ -116,11 +126,7 @@ define(["core/str"], function(STR) {
             input.setAttribute("name", "select_all");
             input.setAttribute("id", "id_select_all");
             input.classList.add("ml-2");
-            if (input.addEventListener) {
-                input.addEventListener("change", JS.onchange_selectall, false);
-            } else if (input.attachEvent) {
-                input.attachEvent("onchange", JS.onchange_selectall);
-            }
+            JS.add_event_listener(input, "change", JS.onchange_selectall);
 
             var label = document.createElement("LABEL");
             label.setAttribute("for", "id_select_all");
@@ -201,6 +207,49 @@ define(["core/str"], function(STR) {
         document.querySelectorAll(s).forEach(function(checkbox){
             checkbox.checked = checked;
         });
+    };
+
+    JS.setup_dateformats = function(){
+
+        // Cache URL of "switch_plus" icon
+        var src = M.util.image_url("t/switch_plus");
+        // M.cfg.wwwroot + "/theme/image.php/" + M.cfg.theme + "/core/" + M.cfg.themerev + "/t/switch_plus";
+
+        var s = "#fgroup_id_elements_moodledatefmt .fitem";
+        document.querySelectorAll(s).forEach(function(fitem, i){
+            if (i == 0) {
+                fitem.classList.add("justify-content-start");
+            }
+            fitem.classList.add("d-block"); // override "flex"
+
+            var txt = fitem.querySelector("small");
+            if (txt) {
+                var img = document.createElement("IMG");
+                img.src = src;
+                img.classList.add("ml-2");
+                JS.add_event_listener(img, "click", JS.onclick_dateformat);
+
+                fitem.insertBefore(img, txt);
+                txt.classList.add("d-none");
+                txt.classList.add("ml-4");
+            }
+        });
+    };
+
+    JS.onclick_dateformat = function(){
+        var fitem = this.closest(".fitem");
+        if (fitem) {
+            var txt = fitem.querySelector("small");
+            if (txt) {
+                if (txt.classList.contains("d-none")) {
+                    txt.classList.replace("d-none", "d-block");
+                    this.src = this.src.replace('plus','minus');
+                } else {
+                    txt.classList.replace("d-block", "d-none");
+                    this.src = this.src.replace('minus','plus');
+                }
+            }
+        }
     };
 
     return JS;
