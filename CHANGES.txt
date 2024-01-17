@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2024-01-17 (35)
+ - remove dynamic property 'version' for compatability with PHP 8.2
+
 2022-09-01 (34)
  - (1) add Japanese lang strings; (2) skip consideration of unrated database, forums and glossaries; (3) improve display and operation of data format strings on settings page for this block.
 

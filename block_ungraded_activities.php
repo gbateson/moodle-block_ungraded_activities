@@ -44,7 +44,7 @@ class block_ungraded_activities extends block_base {
      */
     function init() {
         $this->title = get_string('blockname', 'block_ungraded_activities');
-        $this->version = 2011111100;
+        // $this->version = 2011111100;
     }
 
     /**
