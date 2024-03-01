@@ -386,8 +386,11 @@ class block_ungraded_activities_edit_form extends block_edit_form {
             $mform->addGroup($elements, $elements_name, $label, '', false);
             $mform->addHelpButton($elements_name, $name, $plugin);
 
-            $defaultvalue = $this->defaultvalue($name);
-            $defaultvalue = explode(',', $defaultvalue);
+            if ($defaultvalue = $this->defaultvalue($name)) {
+                $defaultvalue = explode(',', $defaultvalue);
+            } else {
+                $defaultvalue = [];
+            }
 
             foreach ($this->modnames as $modname => $text) {
                 $checkbox_name = $config_name.'['.$modname.']';

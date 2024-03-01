@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2024-03-01 (36)
+ - block_ungraded_activites make JS compatible with obfuscated element ID on blocks in Moodle >= 4.2
+
 2024-01-17 (35)
  - remove dynamic property 'version' for compatability with PHP 8.2
 
