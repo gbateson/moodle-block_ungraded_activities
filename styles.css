@@ -61,40 +61,40 @@
  * styles for the ungraded_activities block
  */
 
-div.block_ungraded_activities div.ungradedactivity {
+.block_ungraded_activities div.ungradedactivity {
     padding: 2px;
     cursor: pointer;
     font-size: 0.9em;
 }
-div.block_ungraded_activities div.ungradedactivity img.activityicon {
+.block_ungraded_activities div.ungradedactivity img.activityicon {
     margin: 0px 4px 0px 0px;
     padding: 0px;
     vertical-align: text-top;
 }
-div.block_ungraded_activities ul.ungradeditems {
+.block_ungraded_activities ul.ungradeditems {
     list-style: none;
     margin: 0px 10px 0px 20px;
     padding: 0px;
 }
-div.block_ungraded_activities ul.ungradeditems li.ungradeditem {
+.block_ungraded_activities ul.ungradeditems li.ungradeditem {
     border: 1px dotted;
     margin: 4px 0px;
     padding: 0px 4px;
     font-size: 0.75em;
 }
-div.block_ungraded_activities ul.ungradeditems li.ungradeditem a {
+.block_ungraded_activities ul.ungradeditems li.ungradeditem a {
     cursor: pointer;
 }
 /* ======================================== **
-    we must include div.content in the next
+    we must include .content in the next
     selector so that we override the css in
     the custom_corners theme
     =============================
-    div.sideblock div.content * {
+    div.sideblock .content * {
         text-align: left;
     }
 ** ======================================== */
-div.block_ungraded_activities div.content p {
+.block_ungraded_activities .content p {
     font-size: 0.8em;
     font-weight: bold;
     line-height: 1.2em;
@@ -102,7 +102,7 @@ div.block_ungraded_activities div.content p {
     padding: 0px;
     text-align: center;
 }
-div.block_ungraded_activities div.content div.footer img.refreshicon {
+.block_ungraded_activities .content .footer img.refreshicon {
     height: 16px;
     width: 16px;
     margin-left: 4px;

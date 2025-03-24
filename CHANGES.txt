@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2025-03-24 (37)
+ - adjust CSS styles for Moodle 4.5
+
 2024-03-01 (36)
  - block_ungraded_activites make JS compatible with obfuscated element ID on blocks in Moodle >= 4.2
 
