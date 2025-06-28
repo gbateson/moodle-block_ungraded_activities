@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2025-06-29 (38)
+ - replace strftime with core_text::strftime for compatability with PHP 8.1 and later
+
 2025-03-24 (37)
  - adjust CSS styles for Moodle 4.5
 

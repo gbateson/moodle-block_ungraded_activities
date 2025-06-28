@@ -590,18 +590,25 @@ class block_ungraded_activities extends block_base {
                             if ($fixdate) {
                                 $search = array(' 0', ' ');
                                 $replace = array();
+                                // Note: strftime is deprecated in PHP >= 8.1, but
+                                // Moodle >= 4.x offers a replacement in core_date.
+                                if (class_exists('\\core_date') && method_exists('\\core_date', 'strftime')) {
+                                    $strftime = '\\core_date::strftime';
+                                } else {
+                                    $strftime = 'strftime';
+                                }
                                 if ($fixmonth) {
-                                    $date = strftime(' %m', $item->timemodified);
+                                    $date = $strftime(' %m', $item->timemodified);
                                     $date = str_replace($search, '', $date);
                                     $replace['MM'] = ltrim($date);
                                 }
                                 if ($fixday) {
-                                    $date = strftime(' %d', $item->timemodified);
+                                    $date = $strftime(' %d', $item->timemodified);
                                     $date = str_replace($search, '', $date);
                                     $replace['DD'] = ltrim($date);
                                 }
                                 if ($fixhour) {
-                                    $date = strftime(' %I', $item->timemodified);
+                                    $date = $strftime(' %I', $item->timemodified);
                                     $date = str_replace($search, '', $date);
                                     $replace['II'] = ltrim($date);
                                 }
