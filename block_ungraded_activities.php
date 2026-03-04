@@ -755,13 +755,6 @@ class block_ungraded_activities extends block_base {
     function get_users_sql() {
         global $COURSE;
 
-        $select = self::get_userfields('u', null, 'userid');
-        $from   = '';
-        $where  = '';
-
-        $groupid = groups_get_course_group($COURSE, true);
-        $groupid = optional_param('groupid', $groupid, PARAM_INT);
-
         // get groupmode: 0=NOGROUPS, 1=VISIBLEGROUPS, 2=SEPARATEGROUPS
         $groupmode = groups_get_course_groupmode($COURSE);
 
@@ -771,7 +764,13 @@ class block_ungraded_activities extends block_base {
             $accessallgroups = false;
         }
 
-        if ($groupid==0 && $accessallgroups) {
+        $select = self::get_userfields('u', null, 'userid');
+        $from   = '';
+        $where  = '';
+
+        list($groupid, $groupingid) = self::get_groupid_groupingid($groupmode);
+
+        if ($groupingid == 0 && $groupid == 0 && $accessallgroups) {
             // user can access all student users in the course
             switch ($this->config->showusertype) {
                 case 0: // all users (i.e. anyone who ever attempted these activities)
@@ -788,9 +787,11 @@ class block_ungraded_activities extends block_base {
                     break;
             }
         } else {
-            $groupids = 'SELECT id FROM {groups}'." WHERE courseid=$COURSE->id";
+            $groupids = 'SELECT id FROM {groups}'." WHERE courseid = $COURSE->id";
             if ($groupid) {
-                $groupids .= " AND id=$groupid";
+                $groupids .= " AND id = $groupid";
+            } else if ($groupingid) {
+                $groupids .= " AND id IN (SELECT groupid FROM {groupings_groups} WHERE groupingid = $groupingid)";
             }
             if ($accessallgroups==false) {
                 // user can only see members in groups to which (s)he belongs
@@ -801,6 +802,46 @@ class block_ungraded_activities extends block_base {
         }
 
         return array($select, $from, $where);
+    }
+
+    /**
+     * Get the current group ID and grouping ID for a given group mode.
+     *
+     * If not set in the current session, values from user_preferences will be returned.
+     *
+     * @param int $groupmode The group mode (e.g. NOGROUPS, SEPARATEGROUPS, VISIBLEGROUPS).
+     * @return array An array containing:
+     *               - int $groupid The active group ID (0 if none).
+     *               - int $groupingid The active grouping ID.
+     */
+    static public function get_groupid_groupingid($groupmode) {
+        global $COURSE, $SESSION;
+        $courseid = (int)$COURSE->id;
+
+        if (isset($SESSION->activegrouping[$courseid][$groupmode])) {
+            $groupingid = $SESSION->activegrouping[$courseid][$groupmode];
+        } else {
+            $groupingid = $COURSE->defaultgroupingid;
+            $preferencename = "taskchain_navigation_groupingid_{$courseid}_{$groupmode}";
+            $groupingid = get_user_preferences($preferencename, $groupingid);
+        }
+
+        if (is_array($groupingid)) {
+            $groupingid = reset($groupingid);
+        }
+
+        if (isset($SESSION->activegroup[$courseid][$groupmode][$groupingid])) {
+            $groupid = $SESSION->activegroup[$courseid][$groupmode][$groupingid];
+        } else {
+            $preferencename = "taskchain_navigation_groupid_{$courseid}_{$groupmode}_{$groupingid}";
+            $groupid = get_user_preferences($preferencename, 0);
+        }
+
+        if (is_array($groupid)) {
+            $groupid = reset($groupid);
+        }
+
+        return [(int)$groupid, (int)$groupingid];
     }
 
     /**

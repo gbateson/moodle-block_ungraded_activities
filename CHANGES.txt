@@ -2,6 +2,9 @@
 Change log for block_ungraded_activities
 ========================================
 
+2026-03-04 (39)
+ - be aware of groupings on the taskchain_navigation group selection menu
+
 2025-06-29 (38)
  - replace strftime with core_text::strftime for compatability with PHP 8.1 and later
 
